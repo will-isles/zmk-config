@@ -50,26 +50,26 @@
             bindings = <
 &kp ESCAPE  &kp Q  &kp W  &kp E         &kp R  &kp T        &kp Y           &kp U  &kp I        &kp O        &kp P            &kp BSPC
 &kp TAB     &kp A  &kp S  &kp D         &kp F  &kp G        &kp H           &kp J  &HMR RGUI K  &HMR RALT L  &HMR RCTRL SEMI  &kp SQT
-&kp LCTRL   &kp Z  &kp X  &kp C         &kp V  &kp B        &kp N           &kp M  &kp COMMA    &kp DOT      &kp FSLH         &kp DEL
+&kp LCTRL   &kp Z  &kp X  &kp C         &kp V  &kp B        &kp N           &kp M  &kp COMMA    &kp DOT      &kp FSLH         &kp ENTER
                           &kp LEFT_GUI  &mo 1  &kp SPACE    &kp LEFT_SHIFT  &mo 2  &kp ENTER
             >;
         };
 
         layer_1 {
             bindings = <
-&kp ASTERISK  &kp MINUS      &mt AMPERSAND N7          &mt ASTERISK N8       &mt LEFT_PARENTHESIS N9  &HMR RIGHT_PARENTHESIS PLUS    &kp GRAVE  &trans             &kp UP_ARROW     &trans     &kp LEFT_BRACE    &kp RIGHT_BRACE
-&kp PLUS      &kp BACKSPACE  &mt DOLLAR NUMBER_4       &mt PERCENT N5        &mt CARET NUMBER_6       &kp ENTER                      &trans     &kp LEFT           &kp DOWN         &kp RIGHT  &kp LEFT_BRACKET  &kp RIGHT_BRACKET
-&trans        &kp N0         &mt EXCLAMATION NUMBER_1  &mt AT_SIGN NUMBER_2  &mt HASH NUMBER_3        &kp PERIOD                     &kp INS    &kp DEL            &kp HOME         &kp END    &kp PG_UP         &kp PG_DN
-                                                       &kp TILDE             &kp SPACE                &kp LEFT_SHIFT                 &kp SPACE  &kp C_VOLUME_DOWN  &kp C_VOLUME_UP
+&kp ASTERISK  &kp MINUS      &mt AMPERSAND N7          &mt ASTERISK N8       &mt LEFT_PARENTHESIS N9  &HMR RIGHT_PARENTHESIS PLUS    &kp GRAVE  &kp HOME  &kp UP_ARROW  &kp END        &kp LEFT_BRACE    &kp RIGHT_BRACE
+&kp PLUS      &kp BACKSPACE  &mt DOLLAR NUMBER_4       &mt PERCENT N5        &mt CARET NUMBER_6       &kp ENTER                      &kp TILDE  &kp LEFT  &kp DOWN      &kp RIGHT      &kp LEFT_BRACKET  &kp RIGHT_BRACKET
+&trans        &kp N0         &mt EXCLAMATION NUMBER_1  &mt AT_SIGN NUMBER_2  &mt HASH NUMBER_3        &kp PERIOD                     &kp INS    &kp DEL   &kp PG_UP     &kp PAGE_DOWN  &trans            &trans
+                                                       &trans                &trans                   &trans                         &trans     &trans    &trans
             >;
         };
 
         layer_2 {
             bindings = <
-&kp F1  &kp F2  &kp F3  &kp F4  &kp F5  &kp F6            &kp F7        &kp F8        &kp F9        &kp F10       &kp F11       &kp F12
-&trans  &trans  &trans  &trans  &trans  &trans            &trans        &trans        &trans        &trans        &trans        &trans
-&trans  &trans  &trans  &trans  &trans  &trans            &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &bt BT_CLR
-                        &trans  &trans  &kp LEFT_SHIFT    &kp SPACE     &trans        &trans
+&kp F1  &kp F2  &kp F3  &kp F4  &kp F5  &kp F6    &kp F7        &kp F8        &kp F9        &kp F10       &kp F11       &kp F12
+&trans  &trans  &trans  &trans  &trans  &trans    &trans        &trans        &trans        &trans        &trans        &trans
+&trans  &trans  &trans  &trans  &trans  &trans    &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &bt BT_CLR
+                        &trans  &trans  &trans    &trans        &trans        &trans
             >;
         };
 
