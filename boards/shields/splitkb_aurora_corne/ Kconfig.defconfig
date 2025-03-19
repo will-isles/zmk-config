@@ -2,7 +2,7 @@ if SHIELD_MY_KEYBOARD_DONGLE
 
 # Max 16 characters in keyboard name
 config ZMK_KEYBOARD_NAME
-    default "My Board"
+    default "Aurora Dongle"
 
 config ZMK_SPLIT_ROLE_CENTRAL
     default y
