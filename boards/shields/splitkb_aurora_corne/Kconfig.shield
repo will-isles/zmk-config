@@ -1,9 +1,0 @@
-config SHIELD_SPLITKB_AURORA_CORNE_LEFT
-    def_bool $(shields_list_contains,splitkb_aurora_corne_left)
-
-config SHIELD_SPLITKB_AURORA_CORNE_RIGHT
-    def_bool $(shields_list_contains,splitkb_aurora_corne_right)
-
-
-config SHIELD_SPLITKB_AURORA_CORNE_DONGLE
-    def_bool $(shields_list_contains,splitkb_aurora_corne_dongle)

@@ -5,8 +5,10 @@
  */
 
 #include <behaviors.dtsi>
-#include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/keys.h>
+
+#define LOWER   1
+#define RAISE   2
 
 / {
     keymap {
