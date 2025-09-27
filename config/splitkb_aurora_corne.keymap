@@ -8,24 +8,8 @@
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/keys.h>
-#include <dt-bindings/zmk/outputs.h>
-
-&lt { tapping-term-ms = <300>; };
 
 / {
-    behaviors {
-        esc_ctrl: esc_ctrl {
-            compatible = "zmk,behavior-hold-tap";
-            label = "ESC_CTRL";
-            #binding-cells = <2>;
-            tapping-term-ms = <300>;
-            quick-tap-ms = <120>;
-            flavor = "tap-preferred";
-            global-quick-tap;
-            bindings = <&kp>, <&kp>;
-        };
-    };
-
     combos {
         compatible = "zmk,combos";
 
@@ -81,10 +65,10 @@
             //                    | GUI |     | SPC |   | ENT |     | ALT |
 
             bindings = <
-&esc_ctrl LCTRL TAB  &kp F1   &kp F2   &kp F3    &kp F4  &kp F5       &trans   &trans  &trans    &trans  &trans  &kp BSPC
-&kp ESC              &kp F6   &kp F7   &kp F8    &kp F9  &kp F10      &trans   &trans  &trans    &trans  &trans  &trans
-&kp LSHFT            &kp F11  &kp F12  &kp F13   &trans  &trans       &trans   &trans  &trans    &trans  &trans  &trans
-                                       &kp LGUI  &trans  &kp SPACE    &kp RET  &trans  &kp RALT
+&none      &kp F1   &kp F2   &kp F3    &kp F4  &kp F5       &trans   &trans  &trans    &trans  &trans  &kp BSPC
+&kp ESC    &kp F6   &kp F7   &kp F8    &kp F9  &kp F10      &trans   &trans  &trans    &trans  &trans  &trans
+&kp LSHFT  &kp F11  &kp F12  &kp F13   &trans  &trans       &trans   &trans  &trans    &trans  &trans  &trans
+                             &kp LGUI  &trans  &kp SPACE    &kp RET  &trans  &kp RALT
             >;
         };
     };
