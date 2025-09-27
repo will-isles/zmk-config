@@ -24,11 +24,11 @@ include:
     cmake-args: -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=y -DCONFIG_ZMK_SPLIT=y   -DCONFIG_ZMK_STUDIO=y
 
   - board: nice_nano_v2
-    shield: splitkb_aurora_corne_left nice_view_adapter nice_view
+    shield: splitkb_aurora_corne_left nice_view_adapter nice_view_custom
     cmake-args: -DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n
 
   - board: nice_nano_v2
-    shield: splitkb_aurora_corne_right nice_view_adapter nice_view
+    shield: splitkb_aurora_corne_right nice_view_adapter nice_view_custom
     cmake-args: -DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n
 
   - board: seeeduino_xiao_ble
