@@ -78,10 +78,10 @@
             //                    | GUI |     | SPC |   | ENT |     | ALT |
 
             bindings = <
-&kp TAB    &kp EXCL   &kp DQT   &kp HASH   &kp DLLR       &kp PRCNT     &kp CARET       &kp DE_FSLH  &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &kp DE_EQUAL  &kp BSPC
-&kp LCTRL  &kp RA(N)  &kp PIPE  &trans     &kp RA(CARET)  &kp RA(L)     &kp RA(LS(N7))  &kp GRAVE    &kp RA(N8)            &kp RA(N9)             &kp BSLH      &trans
-&kp LSHFT  &trans     &trans    &kp GRAVE  &kp LS(GRAVE)  &kp RA(N7)    &trans          &trans       &kp RA(N5)            &kp RA(N6)             &kp RA(N7)    &studio_unlock
-                                &kp LGUI   &trans         &kp SPACE     &kp RET         &trans       &kp RALT
+&kp TAB    &kp EXCL   &kp DQT   &kp HASH   &kp DLLR       &kp PRCNT     &kp CARET       &kp FSLH   &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &kp KP_EQUAL  &kp BSPC
+&kp LCTRL  &kp RA(N)  &kp PIPE  &trans     &kp RA(CARET)  &kp RA(L)     &kp RA(LS(N7))  &kp GRAVE  &kp RA(N8)            &kp RA(N9)             &kp BSLH      &trans
+&kp LSHFT  &trans     &trans    &kp GRAVE  &kp LS(GRAVE)  &kp RA(N7)    &trans          &trans     &kp RA(N5)            &kp RA(N6)             &kp RA(N7)    &studio_unlock
+                                &kp LGUI   &trans         &kp SPACE     &kp RET         &trans     &kp RALT
             >;
         };
 
