@@ -26,27 +26,18 @@ jobs:
         run: |
           set -euo pipefail
           TIMESTAMP="${{ steps.timestamp.outputs.timestamp }}"
-          # Find the firmware.zip file
-          FIRMWARE_ZIP=$(find artifacts -name "firmware.zip" -type f | head -1)
-          if [ -z "$FIRMWARE_ZIP" ]; then
-            echo "Error: firmware.zip not found in artifacts directory"
+          # Find the firmware file
+          FIRMWARE=$(find artifacts -name "firmware" -type f | head -1)
+          if [ -z "$FIRMWARE" ]; then
+            echo "Error: firmware not found in artifacts directory"
             exit 1
           fi
-          # Create a temporary directory to extract files
-          EXTRACT_DIR=$(mktemp -d)
-          # Extract all files from firmware.zip
-          unzip -q "$FIRMWARE_ZIP" -d "$EXTRACT_DIR"
-          # Create new zip file with timestamped name
+          # Copy firmware to new timestamped name
           NEW_NAME="aurora-corne-${TIMESTAMP}.zip"
-          cd "$EXTRACT_DIR"
-          zip -q -r "../$NEW_NAME" .
-          cd - > /dev/null
-          mv "$EXTRACT_DIR/../$NEW_NAME" .
-          # Clean up temporary directory
-          rm -rf "$EXTRACT_DIR"
+          cp "$FIRMWARE" "$NEW_NAME"
           # Verify the file was created successfully
           if [ ! -f "$NEW_NAME" ]; then
-            echo "Error: Failed to create zip file: $NEW_NAME"
+            echo "Error: Failed to copy zip file: $NEW_NAME"
             exit 1
           fi
           echo "filename=$NEW_NAME" >> $GITHUB_OUTPUT
