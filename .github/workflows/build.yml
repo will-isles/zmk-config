@@ -23,6 +23,7 @@ jobs:
           echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
 
       - name: Rename firmware artifacts
+        id: rename
         run: |
           TIMESTAMP="${{ steps.timestamp.outputs.timestamp }}"
           cd artifacts
@@ -34,10 +35,11 @@ jobs:
           newname="aurora-corne-${TIMESTAMP}.zip"
           find . -name "*.uf2" -type f -exec zip -q "../renamed/$newname" {} \;
           echo "Created: $newname with all firmware files"
+          echo "artifact_name=aurora-corne-${TIMESTAMP}" >> $GITHUB_OUTPUT
 
       - name: Upload renamed artifact
         uses: actions/upload-artifact@v4
         with:
-          name: firmware-timestamped
+          name: ${{ steps.rename.outputs.artifact_name }}
           path: renamed/aurora-corne-*.zip
           retention-days: 90
