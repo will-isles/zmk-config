@@ -27,56 +27,17 @@ jobs:
           TIMESTAMP="${{ steps.timestamp.outputs.timestamp }}"
           cd artifacts
 
-          # Debug: List directory structure
-          echo "Artifact directory structure:"
-          find . -type f -name "*.zip" | head -20
-          echo "---"
-
-          # Create output directory for renamed files
+          # Create output directory for renamed file
           mkdir -p ../renamed
 
-          # Find all zip files recursively
-          find . -name "*.zip" -type f | while IFS= read -r zipfile; do
-            # Get the directory containing the zip file
-            zipdir=$(dirname "$zipfile")
-            filename=$(basename "$zipfile")
-            
-            # Determine variant from path and filename
-            variant=""
-            if echo "$zipfile" | grep -qi "dongle"; then
-              variant="dongle"
-            elif echo "$zipfile" | grep -qi "left"; then
-              variant="left"
-            elif echo "$zipfile" | grep -qi "right"; then
-              variant="right"
-            elif echo "$zipfile" | grep -qi "settings.*reset"; then
-              if echo "$zipfile" | grep -qi "xiao"; then
-                variant="settings-reset-xiao"
-              elif echo "$zipfile" | grep -qi "nice.*nano"; then
-                variant="settings-reset-nice-nano"
-              else
-                variant="settings-reset"
-              fi
-            else
-              # Use sanitized filename (without .zip extension) as variant
-              variant=$(echo "$filename" | sed 's/\.zip$//' | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-\|-$//g')
-            fi
-            
-            if [ -n "$variant" ]; then
-              # Create new filename
-              newname="aurora-${variant}-${TIMESTAMP}.zip"
-              
-              # Copy to renamed directory
-              cp "$zipfile" "../renamed/$newname"
-              echo "Renamed: $zipfile -> $newname"
-            else
-              echo "Warning: Could not determine variant for $zipfile"
-            fi
-          done
+          # Create single zip file with all .uf2 files
+          newname="aurora-corne-${TIMESTAMP}.zip"
+          find . -name "*.uf2" -type f -exec zip -q "../renamed/$newname" {} \;
+          echo "Created: $newname with all firmware files"
 
-      - name: Upload renamed artifacts
+      - name: Upload renamed artifact
         uses: actions/upload-artifact@v4
         with:
           name: firmware-timestamped
-          path: renamed/*.zip
+          path: renamed/aurora-corne-*.zip
           retention-days: 90
