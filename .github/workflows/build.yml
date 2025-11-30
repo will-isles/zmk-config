@@ -27,39 +27,50 @@ jobs:
           TIMESTAMP="${{ steps.timestamp.outputs.timestamp }}"
           cd artifacts
 
-          # Process each artifact directory
-          for artifact_dir in */; do
-            # Get artifact name (directory name without trailing slash)
-            artifact_name="${artifact_dir%/}"
+          # Debug: List directory structure
+          echo "Artifact directory structure:"
+          find . -type f -name "*.zip" | head -20
+          echo "---"
+
+          # Create output directory for renamed files
+          mkdir -p ../renamed
+
+          # Find all zip files recursively
+          find . -name "*.zip" -type f | while IFS= read -r zipfile; do
+            # Get the directory containing the zip file
+            zipdir=$(dirname "$zipfile")
+            filename=$(basename "$zipfile")
             
-            # Find the zip file in this artifact directory
-            zipfile=$(find "$artifact_dir" -maxdepth 1 -name "*.zip" -type f | head -n 1)
-            
-            if [ -n "$zipfile" ]; then
-              # Determine variant from artifact name
-              if echo "$artifact_name" | grep -qi "dongle"; then
-                variant="dongle"
-              elif echo "$artifact_name" | grep -qi "left"; then
-                variant="left"
-              elif echo "$artifact_name" | grep -qi "right"; then
-                variant="right"
-              elif echo "$artifact_name" | grep -qi "settings.*reset"; then
-                if echo "$artifact_name" | grep -qi "xiao"; then
-                  variant="settings-reset-xiao"
-                elif echo "$artifact_name" | grep -qi "nice.*nano"; then
-                  variant="settings-reset-nice-nano"
-                else
-                  variant="settings-reset"
-                fi
+            # Determine variant from path and filename
+            variant=""
+            if echo "$zipfile" | grep -qi "dongle"; then
+              variant="dongle"
+            elif echo "$zipfile" | grep -qi "left"; then
+              variant="left"
+            elif echo "$zipfile" | grep -qi "right"; then
+              variant="right"
+            elif echo "$zipfile" | grep -qi "settings.*reset"; then
+              if echo "$zipfile" | grep -qi "xiao"; then
+                variant="settings-reset-xiao"
+              elif echo "$zipfile" | grep -qi "nice.*nano"; then
+                variant="settings-reset-nice-nano"
               else
-                # Use sanitized artifact name as variant
-                variant=$(echo "$artifact_name" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-\|-$//g')
+                variant="settings-reset"
               fi
-              
-              # Rename the zip file
+            else
+              # Use sanitized filename (without .zip extension) as variant
+              variant=$(echo "$filename" | sed 's/\.zip$//' | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-\|-$//g')
+            fi
+            
+            if [ -n "$variant" ]; then
+              # Create new filename
               newname="aurora-${variant}-${TIMESTAMP}.zip"
-              mv "$zipfile" "$artifact_dir/$newname"
+              
+              # Copy to renamed directory
+              cp "$zipfile" "../renamed/$newname"
               echo "Renamed: $zipfile -> $newname"
+            else
+              echo "Warning: Could not determine variant for $zipfile"
             fi
           done
 
@@ -67,5 +78,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: firmware-timestamped
-          path: artifacts/**/*.zip
+          path: renamed/*.zip
           retention-days: 90
