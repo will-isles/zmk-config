@@ -9,11 +9,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Download all artifacts
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          pattern: "*"
-          merge-multiple: false
+          name: firmware
           path: artifacts
 
       - name: Generate timestamp
@@ -22,26 +21,15 @@ jobs:
           TIMESTAMP=$(date -u +'%Y-%m-%d-%H-%M-%S')
           echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
 
-      - name: Rename firmware artifacts
-        id: rename
+      - name: Rename artifact
         run: |
           TIMESTAMP="${{ steps.timestamp.outputs.timestamp }}"
-          cd artifacts
+          zipfile="aurora-corne-${TIMESTAMP}.zip"
+          find artifacts -name "*.uf2" -type f -exec zip -q "$zipfile" {} \;
 
-          # Create output directory for renamed file
-          mkdir -p ../renamed
-
-          # Create single zip file with all .uf2 files
-          newname="aurora-corne-${TIMESTAMP}.zip"
-          zipfile="renamed/$newname"
-          find . -name "*.uf2" -type f -exec zip -q "../$zipfile" {} \;
-          echo "Created: $newname with all firmware files"
-          echo "artifact_name=aurora-corne-${TIMESTAMP}" >> $GITHUB_OUTPUT
-          echo "zip_path=$zipfile" >> $GITHUB_OUTPUT
-
-      - name: Upload renamed artifact
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.rename.outputs.artifact_name }}
-          path: ${{ steps.rename.outputs.zip_path }}
+          name: aurora-corne-${{ steps.timestamp.outputs.timestamp }}
+          path: aurora-corne-${{ steps.timestamp.outputs.timestamp }}.zip
           retention-days: 90
