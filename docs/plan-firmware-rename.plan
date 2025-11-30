@@ -1,0 +1,167 @@
+# Plan: Add Timestamped Firmware Rename Step to GitHub Actions Workflow
+
+## Overview
+Add a post-build step to the GitHub Actions workflow that renames the firmware .zip output artifacts to include a timestamp. All zip artifacts should follow the pattern `aurora-<variant>-YYYY-MM-DD-HH-MM-SS.zip` (e.g., `aurora-dongle-YYYY-MM-DD-HH-MM-SS.zip`). The timestamp is only applied to the full zip output files, not to individual files within the zips.
+
+## Current State
+
+### Current Workflow Structure
+- **File**: `.github/workflows/build.yml`
+- **Structure**: Uses reusable workflow from `zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3`
+- **Artifacts**: The reusable workflow produces firmware .zip files as artifacts
+- **Build Matrix**: Defined in `build.yaml`, builds multiple firmware variants:
+  - SplitKB Aurora Corne dongle (Seeed XIAO BLE)
+  - SplitKB Aurora Corne left half (Nice!Nano v2)
+  - SplitKB Aurora Corne right half (Nice!Nano v2)
+  - Settings reset firmware for both board types
+
+## Implementation Plan
+
+### 1. Understand Artifact Output from Reusable Workflow
+- [ ] **Research**: Determine artifact names and structure from ZMK reusable workflow
+  - [ ] Check if artifacts are named consistently (e.g., `firmware`, `firmware-<variant>`)
+  - [ ] Verify artifact paths and structure
+  - [ ] Note: Artifacts from reusable workflows are accessible via `needs.<job-id>.outputs` or by downloading artifacts from the workflow run
+
+### 2. Add Post-Build Job for Renaming
+- [ ] **File**: `.github/workflows/build.yml`
+- [ ] **Approach**: Add a new job that:
+  - [ ] Depends on the `build` job completion
+  - [ ] Downloads all artifacts from the build job
+  - [ ] Renames each firmware .zip file with timestamp
+  - [ ] Re-uploads renamed artifacts
+
+### 3. Implementation Details
+
+#### Job Structure
+```yaml
+jobs:
+  build:
+    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3
+  
+  rename-artifacts:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      # Download artifacts
+      # Rename with timestamp
+      # Upload renamed artifacts
+```
+
+#### Key Steps Required:
+- [ ] **Step 1: Download Artifacts**
+  - Use `actions/download-artifact@v4` to download all artifacts from the build job
+  - Artifacts from reusable workflows may need to be accessed via workflow run API or passed through outputs
+  - Alternative: Use `actions/download-artifact@v4` with `pattern: '*'` to download all artifacts
+
+- [ ] **Step 2: Generate Timestamp**
+  - Format: `YYYY-MM-DD-HH-MM-SS` (e.g., `2024-01-15-14-30-45`)
+  - Use GitHub Actions environment variable or `date` command
+  - Store in environment variable for consistency
+
+- [ ] **Step 3: Rename Firmware Zip Files**
+  - Find all `.zip` files in downloaded artifacts (these are the full zip outputs)
+  - Identify each variant artifact (dongle, left, right, settings_reset)
+  - Rename each zip file following pattern: `aurora-<variant>-YYYY-MM-DD-HH-MM-SS.zip`
+    - Dongle: `aurora-dongle-YYYY-MM-DD-HH-MM-SS.zip`
+    - Left: `aurora-left-YYYY-MM-DD-HH-MM-SS.zip` (or similar variant identifier)
+    - Right: `aurora-right-YYYY-MM-DD-HH-MM-SS.zip` (or similar variant identifier)
+    - Settings reset variants: `aurora-settings-reset-<board>-YYYY-MM-DD-HH-MM-SS.zip`
+  - Note: Only rename the zip files themselves, not files within the zips
+
+- [ ] **Step 4: Upload Renamed Artifacts**
+  - Use `actions/upload-artifact@v4` to upload renamed files
+  - Option 1: Upload as single artifact containing all renamed files
+  - Option 2: Upload each renamed file as separate artifact (preserve original artifact names with timestamp)
+  - Set appropriate retention period if needed
+
+### 4. Technical Considerations
+
+#### Artifact Access from Reusable Workflows
+- [ ] **Challenge**: Reusable workflows may not directly expose artifacts to dependent jobs
+- [ ] **Solution Options**:
+  1. Use `actions/download-artifact@v4` with artifact name (if known)
+  2. Use GitHub API to list and download artifacts from workflow run
+  3. Modify approach to use workflow outputs if reusable workflow supports it
+  4. Check ZMK reusable workflow documentation for artifact naming conventions
+
+#### Timestamp Format
+- [ ] **Format**: `YYYY-MM-DD-HH-MM-SS` (e.g., `2024-01-15-14-30-45`)
+- [ ] **Timezone**: Use UTC for consistency across timezones
+- [ ] **Implementation**: 
+  ```bash
+  TIMESTAMP=$(date -u +'%Y-%m-%d-%H-%M-%S')
+  ```
+
+#### Multiple Artifacts Handling
+- [ ] **Scenario**: Build matrix produces multiple firmware zip files (left, right, dongle, settings_reset)
+- [ ] **Naming Pattern**: All zip artifacts follow `aurora-<variant>-YYYY-MM-DD-HH-MM-SS.zip`
+  - Dongle: `aurora-dongle-YYYY-MM-DD-HH-MM-SS.zip`
+  - Left half: `aurora-left-YYYY-MM-DD-HH-MM-SS.zip` (or `aurora-splitkb-aurora-corne-left-YYYY-MM-DD-HH-MM-SS.zip`)
+  - Right half: `aurora-right-YYYY-MM-DD-HH-MM-SS.zip` (or `aurora-splitkb-aurora-corne-right-YYYY-MM-DD-HH-MM-SS.zip`)
+  - Settings reset: `aurora-settings-reset-<board>-YYYY-MM-DD-HH-MM-SS.zip`
+- [ ] **Identification**: Identify each artifact by board/shield combination or original artifact name pattern
+- [ ] **Scope**: Only rename the zip files themselves, not individual firmware files within the zips
+
+### 5. Alternative Approaches
+
+#### Option A: Inline Rename in Build Job (Not Possible)
+- ❌ Cannot modify reusable workflow directly
+- ❌ Would require forking ZMK workflow
+
+#### Option B: Post-Processing Job (Recommended)
+- ✅ Clean separation of concerns
+- ✅ Doesn't modify reusable workflow
+- ✅ Easy to maintain and update
+
+#### Option C: Custom Build Workflow
+- ⚠️ Would require maintaining full build workflow
+- ⚠️ More maintenance overhead
+- ⚠️ Loses automatic updates from ZMK reusable workflow
+
+### 6. Implementation Steps
+
+1. [ ] **Research Phase**
+   - [ ] Check GitHub Actions documentation for:
+     - [ ] Artifact download/upload actions (`actions/download-artifact@v4`, `actions/upload-artifact@v4`)
+     - [ ] Accessing artifacts from reusable workflows
+     - [ ] Job dependencies and artifact sharing between jobs
+     - [ ] Artifact naming patterns and best practices
+   - [ ] Check ZMK reusable workflow source for artifact naming
+   - [ ] Test current workflow to identify artifact names
+   - [ ] Verify artifact download mechanism
+
+2. [ ] **Development Phase**
+   - [ ] Add `rename-artifacts` job to workflow
+   - [ ] Implement artifact download step
+   - [ ] Implement timestamp generation
+   - [ ] Implement rename logic (handle multiple files)
+   - [ ] Implement artifact upload step
+
+3. [ ] **Testing Phase**
+   - [ ] Test workflow with `workflow_dispatch` trigger
+   - [ ] Verify artifacts are renamed correctly
+   - [ ] Verify all build variants are handled
+   - [ ] Check artifact download functionality
+
+4. [ ] **Documentation**
+   - [ ] Update README if needed to mention timestamped artifacts
+   - [ ] Document artifact naming convention
+
+## Expected Outcome
+
+After implementation:
+- Build workflow produces timestamped firmware zip artifacts
+- All zip artifacts follow pattern: `aurora-<variant>-YYYY-MM-DD-HH-MM-SS.zip`
+  - Example: `aurora-dongle-2024-01-15-14-30-45.zip`
+- Timestamp is only applied to the zip output files, not files within the zips
+- Original artifacts may still exist (from reusable workflow) or be replaced
+- Users can easily identify firmware build time from artifact name
+
+## Notes
+
+- The reusable workflow from ZMK may already produce artifacts with specific names
+- May need to coordinate artifact naming to avoid conflicts
+- Consider whether to keep original artifacts or replace them entirely
+- Timestamp should use UTC for consistency across contributors in different timezones
+
