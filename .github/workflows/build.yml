@@ -24,6 +24,7 @@ jobs:
       - name: Rename artifact
         id: rename
         run: |
+          set -euo pipefail
           TIMESTAMP="${{ steps.timestamp.outputs.timestamp }}"
           # Find the downloaded file and get its extension
           DOWNLOADED_FILE=$(find artifacts -type f | head -1)
@@ -34,6 +35,11 @@ jobs:
           EXTENSION="${DOWNLOADED_FILE##*.}"
           NEW_NAME="aurora-corne-${TIMESTAMP}.${EXTENSION}"
           mv "$DOWNLOADED_FILE" "$NEW_NAME"
+          # Verify the file was renamed successfully
+          if [ ! -f "$NEW_NAME" ]; then
+            echo "Error: Failed to rename file. Source: $DOWNLOADED_FILE, Target: $NEW_NAME"
+            exit 1
+          fi
           echo "filename=$NEW_NAME" >> $GITHUB_OUTPUT
 
       - name: Upload artifact
