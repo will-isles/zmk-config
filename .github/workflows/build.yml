@@ -22,14 +22,23 @@ jobs:
           echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
 
       - name: Rename artifact
+        id: rename
         run: |
           TIMESTAMP="${{ steps.timestamp.outputs.timestamp }}"
-          zipfile="aurora-corne-${TIMESTAMP}.zip"
-          find artifacts -name "*.uf2" -type f -exec zip -q "$zipfile" {} \;
+          # Find the downloaded file and get its extension
+          DOWNLOADED_FILE=$(find artifacts -type f | head -1)
+          if [ -z "$DOWNLOADED_FILE" ]; then
+            echo "Error: No file found in artifacts directory"
+            exit 1
+          fi
+          EXTENSION="${DOWNLOADED_FILE##*.}"
+          NEW_NAME="aurora-corne-${TIMESTAMP}.${EXTENSION}"
+          mv "$DOWNLOADED_FILE" "$NEW_NAME"
+          echo "filename=$NEW_NAME" >> $GITHUB_OUTPUT
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: aurora-corne-${{ steps.timestamp.outputs.timestamp }}
-          path: aurora-corne-${{ steps.timestamp.outputs.timestamp }}.zip
+          path: ${{ steps.rename.outputs.filename }}
           retention-days: 90
