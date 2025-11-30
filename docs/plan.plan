@@ -1,0 +1,82 @@
+# ZMK Configuration Improvement Plan
+
+## Overview
+This plan addresses keymap organization, documentation gaps, and code quality issues identified in the ZMK configuration repository.
+
+## Changes
+
+### 1. Fix Keymap Layer Naming and Remove Unused Layer
+
+- [ ] **File: `config/splitkb_aurora_corne.keymap`**
+
+- [ ] **Issue**: Layers use inconsistent naming. Correct structure is:
+  - Layer 0 = `Base` (already correct)
+  - Layer 1 = `layer_1` should be `Lower` (numbers/symbols layer)
+  - Layer 2 = `layer_2` should be `Raise` (function keys/BT layer)
+  - Layer 4 = should be removed entirely
+- [ ] **Fix**:
+  - [ ] Rename `layer_1` → `Lower` (layer index 1, contains numbers/symbols)
+  - [ ] Rename `layer_2` → `Raise` (layer index 2, contains function keys/BT controls)
+  - [ ] Remove `layer_4` entirely (layer index 3, duplicates function keys)
+  - [ ] Remove `fourth_layer_combo` (lines 15-20) since it references the removed layer
+  - [ ] Update visual layout comment in `Base` layer to reflect correct layer names (only layer with existing comments)
+
+### 2. Fix Configuration File Formatting
+
+- [ ] **File: `config/splitkb_aurora_corne.conf`**
+  - [ ] **Issue**: Line 9 uses tab character instead of spaces
+  - [ ] **Fix**: Replace tab with spaces for consistency
+
+### 3. Enhance In-Code Documentation
+
+- [ ] **File: `config/splitkb_aurora_corne.keymap`**
+  - [ ] Add comments explaining combo purpose and which keys it activates
+  - [ ] Document layer purposes at the start of each layer definition
+  - [ ] Add comments for `studio_unlock` behavior usage
+
+- [ ] **File: `config/splitkb_aurora_corne.conf`**
+  - [ ] Add comments explaining why encoder/RGB configs are commented
+  - [ ] Document Bluetooth power settings (`BT_CTLR_TX_PWR_PLUS_8`)
+  - [ ] Explain display configuration
+
+### 4. Add Code Quality Standards
+
+- [ ] **New file: `.editorconfig`**
+  - [ ] Use spaces for config files
+  - [ ] Use tabs for DTS/overlay files
+  - [ ] Set consistent indentation sizes
+  - [ ] Enforce UTF-8 encoding and LF line endings
+
+### 5. Verify and Document Custom Behaviors
+
+- [ ] **File: `config/splitkb_aurora_corne.keymap`**
+  - [ ] Verify `studio_unlock` behavior is provided by ZMK Studio (expected since `CONFIG_ZMK_STUDIO=y` in build)
+  - [ ] Add comment documenting its purpose if confirmed valid
+  - [ ] If undefined, replace with appropriate behavior
+
+### 6. Add Documentation
+
+- [ ] **New file: `README.md`**
+  - [ ] Repository overview and purpose
+  - [ ] Hardware configuration (Nice!Nano v2, Seeed XIAO BLE, Nice!View displays)
+  - [ ] Build and flash instructions
+  - [ ] Keymap layer descriptions (Base, Lower, Raise)
+  - [ ] Bluetooth configuration details
+  - [ ] ZMK Studio usage (if applicable)
+  - [ ] Troubleshooting section
+
+## Implementation Order
+
+- [ ] 1. Configuration formatting fix (quick win)
+- [ ] 2. Keymap layer renaming and organization
+- [ ] 3. In-code documentation enhancements
+- [ ] 4. Code quality standards (.editorconfig)
+- [ ] 5. Verify and document custom behaviors
+- [ ] 6. README creation
+
+## Testing
+
+After implementation:
+- [ ] Verify build succeeds with renamed layers
+- [ ] Verify layer activation still works correctly (`&mo 1` and `&mo 2` in Base layer)
+- [ ] Review documentation for accuracy
