@@ -9,20 +9,10 @@
 #include <dt-bindings/zmk/keys.h>
 
 / {
-    combos {
-        compatible = "zmk,combos";
-
-        fourth_layer_combo {
-            key-positions = <37 40>;
-            timeout-ms = <50>;
-            layers = <0>;
-            bindings = <&mo 3>;
-        };
-    };
-
     keymap {
         compatible = "zmk,keymap";
 
+        // Base layer (Layer 0): Default QWERTY layout
         Base {
             // -----------------------------------------------------------------------------------------
             // |  TAB |  Q  |  W  |  E  |  R  |  T  |   |  Y  |  U   |  I  |  O  |  P  | BSPC |
@@ -38,7 +28,9 @@
             >;
         };
 
-        layer_1 {
+        // Lower layer (Layer 1): Numbers, symbols, and navigation keys
+        // Activated by holding the left thumb key (LWR) in Base layer
+        Lower {
             bindings = <
 &kp GRAVE  &kp N1                &kp N2                 &kp N3                &kp N4                 &kp N5           &kp N6          &kp N7    &kp N8        &kp N9     &kp N0         &trans
 &none      &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &kp MINUS             &kp EQUAL              &kp BACKSLASH    &kp PG_UP       &kp HOME  &kp UP_ARROW  &kp END    &kp INSERT     &kp DELETE
@@ -47,27 +39,15 @@
             >;
         };
 
-        layer_2 {
+        // Raise layer (Layer 2): Function keys and Bluetooth controls
+        // Activated by holding the right thumb key (RSE) in Base layer
+        Raise {
             bindings = <
 &kp F1          &kp F2  &kp F3  &kp F4  &kp F5    &kp F6    &kp F7        &kp F8        &kp F9        &kp F10       &kp F11       &kp F12
 &trans          &trans  &trans  &trans  &trans    &trans    &trans        &trans        &trans        &trans        &trans        &trans
+// studio_unlock: ZMK Studio unlock behavior (requires CONFIG_ZMK_STUDIO=y)
 &studio_unlock  &trans  &trans  &trans  &trans    &trans    &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &bt BT_CLR
                                 &trans  &kp LALT  &trans    &trans        &trans        &trans
-            >;
-        };
-
-        layer_4 {
-            // -----------------------------------------------------------------------------------------
-            // | TAB  |  F1   |  F2    |  F3   |   F4  | F5    |     |     |     |     |     |     | BKSP |
-            // | CTRL |  F6   |  F7    |  F8   |   F9  |  F10  |     |     |     |     |     |     |      |
-            // | SHFT |  F11  |  F12   |  F13  |       |       |     |     |     |     |     |     |      |
-            //                    | GUI |     | SPC |   | ENT |     | ALT |
-
-            bindings = <
-&none      &kp F1   &kp F2   &kp F3    &kp F4  &kp F5       &trans   &trans  &trans    &trans  &trans  &kp BSPC
-&kp ESC    &kp F6   &kp F7   &kp F8    &kp F9  &kp F10      &trans   &trans  &trans    &trans  &trans  &trans
-&kp LSHFT  &kp F11  &kp F12  &kp F13   &trans  &trans       &trans   &trans  &trans    &trans  &trans  &trans
-                             &kp LGUI  &trans  &kp SPACE    &kp RET  &trans  &kp RALT
             >;
         };
     };
