@@ -26,18 +26,27 @@ jobs:
         run: |
           set -euo pipefail
           TIMESTAMP="${{ steps.timestamp.outputs.timestamp }}"
-          # Find the downloaded file and get its extension
-          DOWNLOADED_FILE=$(find artifacts -type f | head -1)
-          if [ -z "$DOWNLOADED_FILE" ]; then
-            echo "Error: No file found in artifacts directory"
+          # Find the firmware.zip file
+          FIRMWARE_ZIP=$(find artifacts -name "firmware.zip" -type f | head -1)
+          if [ -z "$FIRMWARE_ZIP" ]; then
+            echo "Error: firmware.zip not found in artifacts directory"
             exit 1
           fi
-          EXTENSION="${DOWNLOADED_FILE##*.}"
-          NEW_NAME="aurora-corne-${TIMESTAMP}.${EXTENSION}"
-          mv "$DOWNLOADED_FILE" "$NEW_NAME"
-          # Verify the file was renamed successfully
+          # Create a temporary directory to extract files
+          EXTRACT_DIR=$(mktemp -d)
+          # Extract all files from firmware.zip
+          unzip -q "$FIRMWARE_ZIP" -d "$EXTRACT_DIR"
+          # Create new zip file with timestamped name
+          NEW_NAME="aurora-corne-${TIMESTAMP}.zip"
+          cd "$EXTRACT_DIR"
+          zip -q -r "../$NEW_NAME" .
+          cd - > /dev/null
+          mv "$EXTRACT_DIR/../$NEW_NAME" .
+          # Clean up temporary directory
+          rm -rf "$EXTRACT_DIR"
+          # Verify the file was created successfully
           if [ ! -f "$NEW_NAME" ]; then
-            echo "Error: Failed to rename file. Source: $DOWNLOADED_FILE, Target: $NEW_NAME"
+            echo "Error: Failed to create zip file: $NEW_NAME"
             exit 1
           fi
           echo "filename=$NEW_NAME" >> $GITHUB_OUTPUT
