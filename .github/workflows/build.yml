@@ -21,35 +21,9 @@ jobs:
           TIMESTAMP=$(date -u +'%Y-%m-%d-%H-%M-%S')
           echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
 
-      - name: Rename artifact
-        id: rename
-        run: |
-          set -euo pipefail
-          TIMESTAMP="${{ steps.timestamp.outputs.timestamp }}"
-          # download-artifact extracts ZIP files by default, so we need to create a new ZIP
-          # from the extracted contents (.uf2 files)
-          if [ ! -d "artifacts" ] || [ -z "$(ls -A artifacts/*.uf2 2>/dev/null)" ]; then
-            echo "Error: No firmware files (.uf2) found in artifacts directory"
-            echo "Contents of artifacts directory:"
-            ls -la artifacts/ || true
-            exit 1
-          fi
-          # Create a new ZIP file containing all firmware files
-          NEW_NAME="aurora-corne-${TIMESTAMP}.zip"
-          cd artifacts
-          zip -r "../${NEW_NAME}" *.uf2
-          cd ..
-          # Verify the file was created successfully
-          if [ ! -f "$NEW_NAME" ]; then
-            echo "Error: Failed to create zip file: $NEW_NAME"
-            exit 1
-          fi
-          echo "Successfully created ${NEW_NAME} ($(du -h "$NEW_NAME" | cut -f1))"
-          echo "filename=$NEW_NAME" >> $GITHUB_OUTPUT
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: aurora-corne-${{ steps.timestamp.outputs.timestamp }}
-          path: ${{ steps.rename.outputs.filename }}
+          path: artifacts/
           retention-days: 90
