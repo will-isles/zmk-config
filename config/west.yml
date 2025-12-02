@@ -11,8 +11,9 @@ manifest:
       remote: zmkfirmware
       revision: main
       import: app/west.yml
-    - name: nice-view-mod
-      remote: dsifry
-      revision: main
+    # nice-view-mod removed for testing
+    # - name: nice-view-mod
+    #   remote: dsifry
+    #   revision: main
   self:
     path: config
