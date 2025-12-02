@@ -6,5 +6,6 @@ zephyr/*
 modules
 .venv
 build
+logs
 
 
