@@ -18,13 +18,29 @@
 #
 ---
 include:
+  - board: seeeduino_xiao_ble
+    shield: splitkb_aurora_corne_dongle
+    snippet: studio-rpc-usb-uart
+    cmake-args: -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=y -DCONFIG_ZMK_SPLIT=y   -DCONFIG_ZMK_STUDIO=y
+
   - board: nice_nano_v2
     shield: splitkb_aurora_corne_left nice_view_adapter nice_view_custom
-    cmake-args: -DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=y
+    cmake-args: -DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n
 
   - board: nice_nano_v2
     shield: splitkb_aurora_corne_right nice_view_adapter nice_view_custom
     cmake-args: -DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n
+
+  # Non-dongle configuration: left as central, right as peripheral
+  - board: nice_nano_v2
+    shield: splitkb_aurora_corne_left nice_view_adapter nice_view_custom
+    cmake-args: -DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=y -DCONFIG_ZMK_SPLIT_BLE_CENTRAL_PERIPHERALS=1
+    artifact-name: splitkb_aurora_corne_left_central
+
+  - board: nice_nano_v2
+    shield: splitkb_aurora_corne_right nice_view_adapter nice_view_custom
+    cmake-args: -DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n
+    artifact-name: splitkb_aurora_corne_right_peripheral
 
   - board: seeeduino_xiao_ble
     shield: settings_reset

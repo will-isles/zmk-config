@@ -1,0 +1,60 @@
+/*
+ * Copyright (c) 2022 The ZMK Contributors
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include <dt-bindings/zmk/matrix_transform.h>
+
+#include <layouts/foostan/corne/5column.dtsi>
+#include <layouts/foostan/corne/6column.dtsi>
+
+&foostan_corne_6col_layout {
+    transform = <&default_transform>;
+};
+
+&foostan_corne_5col_layout {
+    transform = <&five_column_transform>;
+};
+
+/ {
+
+    chosen {
+        zmk,physical-layout = &foostan_corne_6col_layout;
+    };
+
+    default_transform: keymap_transform_0 {
+        compatible = "zmk,matrix-transform";
+        columns = <6>;
+        rows = <4>;
+// Right half only
+// | SW6  | SW5  | SW4  | SW3  | SW2  | SW1  |
+// | SW12 | SW11 | SW10 | SW9  | SW8  | SW7  |
+// | SW18 | SW17 | SW16 | SW15 | SW14 | SW13 |
+//       | SW21 | SW20 | SW19 |
+        map = <
+RC(0,6) RC(0,7) RC(0,8) RC(0,9) RC(0,10) RC(0,11)
+RC(1,6) RC(1,7) RC(1,8) RC(1,9) RC(1,10) RC(1,11)
+RC(2,6) RC(2,7) RC(2,8) RC(2,9) RC(2,10) RC(2,11)
+        RC(3,6) RC(3,7) RC(3,8)
+        >;
+    };
+
+    five_column_transform: keymap_transform_1 {
+        compatible = "zmk,matrix-transform";
+        columns = <5>;
+        rows = <4>;
+// Right half only (5 column variant)
+// | SW6  | SW5  | SW4  | SW3  | SW2  |
+// | SW12 | SW11 | SW10 | SW9  | SW8  |
+// | SW18 | SW17 | SW16 | SW15 | SW14 |
+//       | SW21 | SW20 | SW19 |
+        map = <
+RC(0,6) RC(0,7) RC(0,8) RC(0,9) RC(0,10)
+RC(1,6) RC(1,7) RC(1,8) RC(1,9) RC(1,10)
+RC(2,6) RC(2,7) RC(2,8) RC(2,9) RC(2,10)
+        RC(3,6) RC(3,7) RC(3,8)
+        >;
+    };
+
+};
