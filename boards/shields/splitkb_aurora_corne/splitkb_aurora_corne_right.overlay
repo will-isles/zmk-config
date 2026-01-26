@@ -6,7 +6,7 @@
 
 #include <dt-bindings/zmk/matrix_transform.h>
 
-#include <boards/shields/corne/corne.dtsi>
+#include <boards/shields/corne/corne_right.dtsi>
 #include <layouts/foostan/corne/5column.dtsi>
 #include <layouts/foostan/corne/6column.dtsi>
 
@@ -21,7 +21,6 @@
 / {
 
     chosen {
-        zmk,kscan = &kscan0;
         zmk,physical-layout = &foostan_corne_6col_layout;
     };
 
