@@ -81,7 +81,7 @@ Function keys and Bluetooth controls. Activated by holding the right thumb key.
    west build -b nice_nano_v2 -- -DSHIELD=splitkb_aurora_corne_right
 
    # For dongle (central)
-   west build -b seeeduino_xiao_ble -- -DSHIELD=splitkb_aurora_corne_dongle
+   west build -b xiao_ble -- -DSHIELD=splitkb_aurora_corne_dongle
    ```
 
 4. Flash the firmware using ZMK Toolbox or your preferred flashing tool.
