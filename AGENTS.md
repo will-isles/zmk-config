@@ -31,7 +31,7 @@ There is no repo-local unit test script; firmware validation is build/CI and har
 
 ## Agent affordances
 
-- **Rules**: `.cursor/rules/` — globals and path-scoped behavior.
+- **Rules**: `.cursor/rules/` — keep **≤2** `alwaysApply: true` globals; scope other rules with `globs` (see `zmk-config-files.mdc`).
 - **Skills**: `.cursor/skills/` — add focused workflows here if recurring multi-step tasks appear (none required at init).
 - **Human docs**: `README.md` (hardware, layers, flashing); `docs/` for supplementary material.
 
