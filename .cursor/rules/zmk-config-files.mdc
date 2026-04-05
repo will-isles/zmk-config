@@ -1,0 +1,14 @@
+---
+description: Conventions for ZMK user config, keymaps, and shield files in this repo
+globs:
+  - "config/**"
+  - "boards/**/*.overlay"
+  - "boards/**/*.conf"
+  - "boards/**/Kconfig.*"
+---
+
+# ZMK config files
+
+- Keep keymap and behavior names consistent with existing layers and comments in `config/*.keymap`.
+- When changing splits, Studio, Bluetooth, or display options, align `*.conf` entries and `build.yaml` / shield selection so CI and local builds stay coherent.
+- Prefer Zephyr/ZMK Kconfig symbols and devicetree patterns already used in this tree over copy-paste from unrelated boards.

@@ -1,0 +1,32 @@
+# Dependencies / tool env
+node_modules/
+vendor/
+.venv/
+venv/
+
+# Python noise (if present)
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# West / ZMK workspace (cloned or generated; high churn, huge)
+.west/
+zmk/
+zephyr/
+modules/
+build/
+
+# Logs and local artifacts
+logs/
+*.egg-info/
+.coverage
+htmlcov/
+
+# IDE / OS
+.DS_Store
+
+# Minified / maps (if any appear in tree)
+*.min.js
+*.map

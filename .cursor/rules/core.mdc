@@ -1,0 +1,12 @@
+---
+description: Core invariants for all agent work in this repo
+alwaysApply: true
+---
+
+# Core
+
+- Prefer minimal diffs; do not refactor unrelated code or configs.
+- Follow existing conventions in the touched area; read neighboring `*.keymap`, `*.conf`, overlays, and shield files before editing.
+- Treat `build.yaml` as the authoritative CI matrix when suggesting board/shield/cmake-args combinations.
+- Do not add dependencies or toolchain assumptions without an explicit request or clear project pattern.
+- Do not commit secrets, tokens, or `.env` contents.
