@@ -22,6 +22,8 @@ This repository contains the ZMK firmware configuration for a SplitKB Aurora Cor
 │   ├── splitkb_aurora_corne.conf    # Firmware configuration
 │   └── splitkb_aurora_corne.keymap  # Keymap definition
 ├── build.yaml                       # GitHub Actions build matrix
+├── scripts/
+│   └── build-local.sh               # Docker-based local build (CI parity)
 └── README.md                        # This file
 ```
 
@@ -75,16 +77,41 @@ Function keys and Bluetooth controls. Activated by holding the right thumb key.
 3. Build the firmware:
    ```bash
    # For left half
-   west build -b nice_nano_v2 -- -DSHIELD=splitkb_aurora_corne_left
+   west build -b nice_nano -- -DSHIELD=splitkb_aurora_corne_left
 
    # For right half
-   west build -b nice_nano_v2 -- -DSHIELD=splitkb_aurora_corne_right
+   west build -b nice_nano -- -DSHIELD=splitkb_aurora_corne_right
 
    # For dongle (central)
-   west build -b seeeduino_xiao_ble -- -DSHIELD=splitkb_aurora_corne_dongle
+   west build -b xiao_ble -- -DSHIELD=splitkb_aurora_corne_dongle
    ```
 
 4. Flash the firmware using ZMK Toolbox or your preferred flashing tool.
+
+### Local container build (matches GitHub Actions)
+
+This mirrors CI: image `zmkfirmware/zmk-build-arm:stable`, `west init` / `west update --fetch-opt=--filter=tree:0`, and the same `west build` flags as [`build.yaml`](build.yaml) (including `-DZMK_EXTRA_MODULES` because this repo ships [`zephyr/module.yml`](zephyr/module.yml)).
+
+**Prerequisites:** [Docker](https://docs.docker.com/get-docker/) (or Podman with a `docker`-compatible CLI on `PATH`).
+
+**One-time image pull (recommended):**
+
+```bash
+docker pull zmkfirmware/zmk-build-arm:stable
+```
+
+**Build from the repo root:**
+
+```bash
+./scripts/build-local.sh              # all targets from build.yaml
+./scripts/build-local.sh left         # left half only
+./scripts/build-local.sh dongle       # central dongle only
+./scripts/build-local.sh --init all   # re-sync west modules, then build all
+```
+
+UF2s are written to `firmware/` (gitignored). The west workspace is cached in the Docker volume `zmk-aurora-corne-west` (override with `ZMK_WEST_VOLUME`).
+
+After changing the ZMK revision in [`config/west.yml`](config/west.yml), run with **`--init`** so `west update` runs again. Override the image with `ZMK_BUILD_IMAGE` if needed.
 
 ### Automated Builds
 

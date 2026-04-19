@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: MIT
+
+config SHIELD_SPLITKB_NICE_VIEW_SPI
+    def_bool $(shields_list_contains,splitkb_nice_view_spi)

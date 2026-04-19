@@ -21,6 +21,7 @@ Run from repo root after a `west` workspace exists (paths match `README.md`; con
 - **Init / update**: `west init -l config` then `west update`
 - **Build (examples)**: `west build -b <board> -- -DSHIELD=<shields...> [extra cmake-args]` — use `**build.yaml`** for the exact `board`, `shield`, `snippet`, and `cmake-args` for each target; `README.md` may simplify shield lists.
 - **Validate in CI**: push or open a PR; workflow **Build ZMK firmware** runs the user-config build.
+- **Local container build (CI parity)**: `./scripts/build-local.sh` — same image and `west` flow as `build-user-config.yml`; see `README.md` and skill `.cursor/skills/local-build/`.
 
 There is no repo-local unit test script; firmware validation is build/CI and hardware checks.
 
@@ -32,7 +33,7 @@ There is no repo-local unit test script; firmware validation is build/CI and har
 ## Agent affordances
 
 - **Rules**: `.cursor/rules/` — keep **≤2** `alwaysApply: true` globals; scope other rules with `globs` (see `zmk-config-files.mdc`).
-- **Skills**: `.cursor/skills/` — add focused workflows here if recurring multi-step tasks appear (none required at init).
+- **Skills**: `.cursor/skills/` — e.g. `local-build` for Docker-based local builds matching CI.
 - **Human docs**: `README.md` (hardware, layers, flashing); `docs/` for supplementary material.
 
 ## Out of scope / do not

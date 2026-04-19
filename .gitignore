@@ -6,6 +6,7 @@ zephyr/*
 modules
 .venv
 build
+firmware
 logs
 
 
