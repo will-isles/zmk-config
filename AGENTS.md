@@ -5,7 +5,7 @@ Concise instructions for AI coding agents. ZMK behavior and APIs: use Context7 w
 ## Project snapshot
 
 - **Purpose**: User configuration for ZMK firmware (SplitKB Aurora Corne: halves + optional central dongle, Nice!View).
-- **Stack**: ZMK on Zephyr; `west` workspace; CI uses `zmkfirmware/zmk/.github/workflows/build-user-config.yml` (see `.github/workflows/build.yml`).
+- **Stack**: ZMK on Zephyr; `west` workspace; CI uses `zmkfirmware/zmk/.github/workflows/build-user-config.yml@main` (see `.github/workflows/build.yml`) until a **`v0.4.x`** release tag is published—then pin the same tag in `config/west.yml` and the workflow `uses:` ref.
 
 ## Layout
 

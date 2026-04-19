@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Local ZMK builds using the same container image and west flow as GitHub Actions
-# (zmkfirmware/zmk/.github/workflows/build-user-config.yml @ v0.3).
+# (zmkfirmware/zmk/.github/workflows/build-user-config.yml @ main).
 #
 # Usage:
 #   ./scripts/build-local.sh [--init] [dongle|left|right|reset-xiao|reset-nano|all]
@@ -56,11 +56,13 @@ fi
 docker volume inspect "${WEST_VOLUME}" >/dev/null 2>&1 || docker volume create "${WEST_VOLUME}" >/dev/null
 
 # Default artifact names match build-user-config.yml when artifact-name is omitted:
-#   ${shield:+$shield-}${board}-zmk
+#   ${shield:+$shield-}${board_sanitized}-zmk   (board slashes -> _)
+# If ARTIFACT_NAME is set by the caller, UF2 is firmware/${ARTIFACT_NAME}.uf2 (matches explicit build.yaml rows).
 artifact_name_default() {
   local board="$1"
   local shield="$2"
-  printf '%s%s-zmk' "${shield:+$shield-}" "${board}"
+  local board_sanitized="${board//\//_}"
+  printf '%s%s-zmk' "${shield:+$shield-}" "${board_sanitized}"
 }
 
 run_in_work() {
@@ -119,14 +121,18 @@ fi
 
 # Run a west build inside the container; copies the resulting UF2 to REPO_ROOT/firmware/.
 # Arguments: human_name board shield [snippet]
-# Optional env for caller: WEST_EXTRA_CMAKE — extra cmake args (space-separated -D... tokens)
+# Optional env: WEST_EXTRA_CMAKE, ARTIFACT_NAME (basename without .uf2; must match build.yaml when set)
 run_west_build() {
   local human_name="$1"
   local board="$2"
   local shield="$3"
   local snippet="${4:-}"
   local artifact
-  artifact="$(artifact_name_default "${board}" "${shield}")"
+  if [[ -n "${ARTIFACT_NAME:-}" ]]; then
+    artifact="${ARTIFACT_NAME}"
+  else
+    artifact="$(artifact_name_default "${board}" "${shield}")"
+  fi
 
   echo "==> Building ${human_name} (${board} / ${shield})"
 
@@ -177,28 +183,28 @@ EOS
 }
 
 build_dongle() {
-  WEST_EXTRA_CMAKE="-DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=y -DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_STUDIO=y" \
-    run_west_build dongle xiao_ble splitkb_aurora_corne_dongle studio-rpc-usb-uart
+  ARTIFACT_NAME=corne_dongle WEST_EXTRA_CMAKE="-DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=y -DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_STUDIO=y" \
+    run_west_build dongle "xiao_ble//zmk" splitkb_aurora_corne_dongle studio-rpc-usb-uart
 }
 
 build_left() {
-  WEST_EXTRA_CMAKE="-DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n" \
-    run_west_build left nice_nano "splitkb_nice_view_spi splitkb_aurora_corne_left nice_view_adapter nice_view splitkb_aurora_i2c_off"
+  ARTIFACT_NAME=corne_left WEST_EXTRA_CMAKE="-DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n" \
+    run_west_build left "nice_nano//zmk" "splitkb_nice_view_spi splitkb_aurora_corne_left nice_view_adapter nice_view splitkb_aurora_i2c_off"
 }
 
 build_right() {
-  WEST_EXTRA_CMAKE="-DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n" \
-    run_west_build right nice_nano "splitkb_nice_view_spi splitkb_aurora_corne_right nice_view_adapter nice_view splitkb_aurora_i2c_off"
+  ARTIFACT_NAME=corne_right WEST_EXTRA_CMAKE="-DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n" \
+    run_west_build right "nice_nano//zmk" "splitkb_nice_view_spi splitkb_aurora_corne_right nice_view_adapter nice_view splitkb_aurora_i2c_off"
 }
 
 build_reset_xiao() {
-  WEST_EXTRA_CMAKE="" \
-    run_west_build reset-xiao xiao_ble settings_reset
+  ARTIFACT_NAME=reset_xiao WEST_EXTRA_CMAKE="" \
+    run_west_build reset-xiao "xiao_ble//zmk" settings_reset
 }
 
 build_reset_nano() {
-  WEST_EXTRA_CMAKE="" \
-    run_west_build reset-nano nice_nano settings_reset
+  ARTIFACT_NAME=reset_nano WEST_EXTRA_CMAKE="" \
+    run_west_build reset-nano "nice_nano//zmk" settings_reset
 }
 
 case "${TARGET}" in

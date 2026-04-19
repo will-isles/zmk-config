@@ -19,8 +19,10 @@ This repository contains the ZMK firmware configuration for a SplitKB Aurora Cor
 │   └── shields/
 │       └── splitkb_aurora_corne/    # Shield definitions
 ├── config/
-│   ├── splitkb_aurora_corne.conf    # Firmware configuration
-│   └── splitkb_aurora_corne.keymap  # Keymap definition
+│   ├── splitkb_aurora_corne_{left,right}.conf  # Half-specific Kconfig
+│   └── splitkb_aurora_corne.keymap             # Keymap definition
+├── zephyr/
+│   └── module.yml                   # Zephyr module (board_root; ZMK_EXTRA_MODULES)
 ├── build.yaml                       # GitHub Actions build matrix
 ├── scripts/
 │   └── build-local.sh               # Docker-based local build (CI parity)
@@ -74,23 +76,23 @@ Function keys and Bluetooth controls. Activated by holding the right thumb key.
    west update
    ```
 
-3. Build the firmware:
+3. Build the firmware (Zephyr 4.1 / ZMK `main` use HWMv2 board qualifiers; quote `-b` so the shell does not treat `//` as a comment):
    ```bash
    # For left half
-   west build -b nice_nano -- -DSHIELD=splitkb_aurora_corne_left
+   west build -b "nice_nano//zmk" -- -DSHIELD=splitkb_aurora_corne_left
 
    # For right half
-   west build -b nice_nano -- -DSHIELD=splitkb_aurora_corne_right
+   west build -b "nice_nano//zmk" -- -DSHIELD=splitkb_aurora_corne_right
 
    # For dongle (central)
-   west build -b xiao_ble -- -DSHIELD=splitkb_aurora_corne_dongle
+   west build -b "xiao_ble//zmk" -- -DSHIELD=splitkb_aurora_corne_dongle
    ```
 
 4. Flash the firmware using ZMK Toolbox or your preferred flashing tool.
 
 ### Local container build (matches GitHub Actions)
 
-This mirrors CI: image `zmkfirmware/zmk-build-arm:stable`, `west init` / `west update --fetch-opt=--filter=tree:0`, and the same `west build` flags as [`build.yaml`](build.yaml) (including `-DZMK_EXTRA_MODULES` because this repo ships [`zephyr/module.yml`](zephyr/module.yml)).
+This mirrors CI: image `zmkfirmware/zmk-build-arm:stable` (override with `ZMK_BUILD_IMAGE` if it lags the ZMK revision you need), `west init` / `west update --fetch-opt=--filter=tree:0`, and the same `west build` flags as [`build.yaml`](build.yaml) (including `-DZMK_EXTRA_MODULES` because this repo ships [`zephyr/module.yml`](zephyr/module.yml)). CI uses [`build-user-config.yml` on ZMK `main`](https://github.com/zmkfirmware/zmk/blob/main/.github/workflows/build-user-config.yml) until a **`v0.4.x`** tag exists; then pin both [`config/west.yml`](config/west.yml) and [`.github/workflows/build.yml`](.github/workflows/build.yml) to that tag.
 
 **Prerequisites:** [Docker](https://docs.docker.com/get-docker/) (or Podman with a `docker`-compatible CLI on `PATH`).
 
@@ -109,9 +111,11 @@ docker pull zmkfirmware/zmk-build-arm:stable
 ./scripts/build-local.sh --init all   # re-sync west modules, then build all
 ```
 
-UF2s are written to `firmware/` (gitignored). The west workspace is cached in the Docker volume `zmk-aurora-corne-west` (override with `ZMK_WEST_VOLUME`).
+UF2s are written to `firmware/` (gitignored) using stable names from [`build.yaml`](build.yaml) (`corne_dongle.uf2`, `corne_left.uf2`, `corne_right.uf2`, `reset_xiao.uf2`, `reset_nano.uf2`). The west workspace is cached in the Docker volume `zmk-aurora-corne-west` (override with `ZMK_WEST_VOLUME`).
 
-After changing the ZMK revision in [`config/west.yml`](config/west.yml), run with **`--init`** so `west update` runs again. Override the image with `ZMK_BUILD_IMAGE` if needed.
+After changing the ZMK revision in [`config/west.yml`](config/west.yml), run with **`--init`** so `west update` runs again. For a clean Zephyr tree after a major bump, remove the volume once: `docker volume rm zmk-aurora-corne-west`, then `./scripts/build-local.sh --init all`.
+
+**Rollback:** If a migration fails after merge, `git revert` the migration commit, remove the Docker west volume as above, and `./scripts/build-local.sh --init all` to rebuild against the reverted manifest.
 
 ### Automated Builds
 

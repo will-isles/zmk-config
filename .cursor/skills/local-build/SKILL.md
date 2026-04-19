@@ -2,7 +2,7 @@
 name: local-build
 description: >-
   Test ZMK firmware locally via scripts/build-local.sh in Docker using the same
-  image and west flow as GitHub Actions (build-user-config.yml @ v0.3). Use
+  image and west flow as GitHub Actions (build-user-config.yml @ main). Use
   before push, to reproduce CI failures, or when the user asks for a local
   container build.
 ---
@@ -12,7 +12,7 @@ description: >-
 ## When to use
 
 - Before pushing: confirm every row in [`build.yaml`](build.yaml) compiles.
-- After CI failures: same image (`zmkfirmware/zmk-build-arm:stable`), `west init` / `west update --fetch-opt=--filter=tree:0`, and `west build` flags as CI ([`.github/workflows/build.yml`](.github/workflows/build.yml) → `build-user-config.yml` @ v0.3).
+- After CI failures: same image (`zmkfirmware/zmk-build-arm:stable`), `west init` / `west update --fetch-opt=--filter=tree:0`, and `west build` flags as CI ([`.github/workflows/build.yml`](.github/workflows/build.yml) → `build-user-config.yml` @ `main`).
 - When the user wants UF2s without opening GitHub Actions.
 
 ## How to run
@@ -33,19 +33,19 @@ Outputs go to **`firmware/`** (gitignored). The west tree is cached in Docker vo
 - Binds this repo at **`/zmk-config`** and passes **`-DZMK_EXTRA_MODULES=/zmk-config`** when `zephyr/module.yml` exists (same idea as CI).
 - Syncs **`config/`** into the volume before init/builds.
 - **First run (empty volume):** `west init -l …/config`, `west update --fetch-opt=--filter=tree:0`, `west zephyr-export`.
-- **Each firmware build:** a **new** `docker run` with **`docker run -i`** so `bash -s` reads the heredoc script from stdin. Without `-i`, the heredoc is empty, **`west build` never runs**, and the script can still exit 0 — always keep **`-i`** on that invocation.
+- **Each firmware build:** a **new** `docker run` with **`docker run -i`** so `bash -s` reads the heredoc from stdin. Without `-i`, the heredoc is empty, **`west build` never runs**, and the script can still exit 0 — always keep **`-i`** on that invocation.
 - Inside each build container, runs **`west zephyr-export`** before **`west build`** (fresh `$HOME`; Zephyr’s CMake package registry is not preserved across runs).
-- Uses a fresh **`mktemp -d`** build dir per target (CI-style), then copies **`zephyr/zmk.uf2`** to **`firmware/<artifact>.uf2`**.
+- Uses a fresh **`mktemp -d`** build dir per target (CI-style), then copies **`zephyr/zmk.uf2`** to **`firmware/<artifact>.uf2`**. Explicit **`ARTIFACT_NAME`** values match **`artifact-name`** in [`build.yaml`](build.yaml) (`corne_dongle`, `corne_left`, …).
 
-## Matrix alignment (current ZMK `main`)
+## Matrix alignment (ZMK `main`, Zephyr 4.1)
 
 [`build.yaml`](build.yaml) is the source of truth. Notable details for this tree:
 
-| Target arg   | Board      | Notes |
-| ------------ | ---------- | ----- |
-| `dongle`     | `xiao_ble` | Seeed XIAO BLE in Zephyr 4.1 / current ZMK (`xiao_ble`, not `seeeduino_xiao_ble`). |
-| `left`/`right` | `nice_nano` | Unified HWMv2 board (`nice_nano`, not `nice_nano_v2`). |
-| `reset-*`    | `xiao_ble` / `nice_nano` | `settings_reset` shield. |
+| Target arg   | Board            | Notes |
+| ------------ | ---------------- | ----- |
+| `dongle`     | `xiao_ble//zmk`  | Seeed XIAO BLE; quote `-b` in shell (`//` starts a comment if unquoted). |
+| `left`/`right` | `nice_nano//zmk` | Nice!Nano v2 default variant; not `nice_nano_v2`. |
+| `reset-*`    | `xiao_ble//zmk` / `nice_nano//zmk` | `settings_reset` shield. |
 
 Left/right shield strings include repo-local helpers under **`boards/shields/`**:
 
@@ -58,7 +58,7 @@ Halves use **`config/splitkb_aurora_corne_{left,right}.conf`**: **`CONFIG_ZMK_DI
 
 - Script exits **0**.
 - Log lines **`-> /zmk-config/firmware/<artifact>.uf2`** per built target (host path: **`firmware/<artifact>.uf2`**).
-- **`ls -la firmware/*.uf2`** shows non-zero sizes. Default artifact names mirror CI (`shield-board-zmk.uf2`); long **`shield`** strings yield long filenames (often **spaces** in the name).
+- **`ls -la firmware/*.uf2`** shows non-zero sizes. Artifact basenames match **`build.yaml`** (`corne_dongle.uf2`, `corne_left.uf2`, …).
 
 ## Environment overrides
 
@@ -75,7 +75,7 @@ Halves use **`config/splitkb_aurora_corne_{left,right}.conf`**: **`CONFIG_ZMK_DI
 - **`nice_view_spi` undefined** — ensure left/right matrix still includes **`splitkb_nice_view_spi`** (and ordering) in `build.yaml` and [`scripts/build-local.sh`](scripts/build-local.sh).
 - **SPI0 / TWI0 static assert** — ensure **`splitkb_aurora_i2c_off`** remains **last** in the shield list for halves.
 - **Linker errors from `peripheral_status.c`** on halves — halves conf uses built-in display status screen; re-enabling custom status may require upstream ZMK / extra Kconfig (entropy, battery reporting) to match.
-- **Stale ZMK / Zephyr after `west.yml` change** — **`./scripts/build-local.sh --init all`**.
+- **Stale ZMK / Zephyr after `west.yml` change** — **`./scripts/build-local.sh --init all`**; for a major bump, **`docker volume rm zmk-aurora-corne-west`** then **`--init all`**.
 
 ## Canonical references
 

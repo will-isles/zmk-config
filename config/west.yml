@@ -2,18 +2,12 @@ manifest:
   remotes:
     - name: zmkfirmware
       url-base: https://github.com/zmkfirmware
-    - name: dsifry
-      url-base: https://github.com/dsifry
-    # Additional modules containing boards/shields/custom code can be listed here as well
-    # See https://docs.zephyrproject.org/3.2.0/develop/west/manifest.html#projects
   projects:
     - name: zmk
       remote: zmkfirmware
+      # Pin to a release tag when published (e.g. v0.4.0); use the same ref in
+      # .github/workflows/build.yml (build-user-config.yml@<tag>).
       revision: main
       import: app/west.yml
-    # nice-view-mod removed for testing
-    # - name: nice-view-mod
-    #   remote: dsifry
-    #   revision: main
   self:
     path: config
