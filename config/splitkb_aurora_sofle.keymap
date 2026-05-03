@@ -49,11 +49,11 @@
             //               |     |      |      |      |        |  |       |      |       |       |      |
 
             bindings = <
-&kp GRAVE  &kp  &kp  &kp  &kp  &kp                              &kp        &kp             &kp           &kp              &kp      &kp
-&kp        &kp  &kp  &kp  &kp  &kp                              &kp        &kp             &kp           &kp              &kp      &kp
-&kp        &kp  &kp  &kp  &kp  &kp PIPE                         &kp PG_UP  &kp HOME        &kp UP_ARROW  &kp END          &kp INS  &kp DEL
-&kp        &kp  &kp  &kp  &kp  &kp       &kp    &kp             &kp PG_DN  &kp LEFT_ARROW  &kp DOWN      &kp RIGHT_ARROW  &kp      &kp
-                &kp  &kp  &kp  &kp       &kp    &kp LEFT_SHIFT  &kp        &kp             &kp           &kp
+&kp GRAVE  &trans  &trans  &trans  &trans  &trans                              &trans     &trans          &trans        &trans           &trans   &trans
+&trans     &trans  &trans  &trans  &trans  &trans                              &trans     &trans          &trans        &trans           &trans   &trans
+&trans     &trans  &trans  &trans  &trans  &kp PIPE                            &kp PG_UP  &kp HOME        &kp UP_ARROW  &kp END          &kp INS  &kp DEL
+&trans     &trans  &trans  &trans  &trans  &trans    &trans    &trans          &kp PG_DN  &kp LEFT_ARROW  &kp DOWN      &kp RIGHT_ARROW  &trans   &trans
+                   &trans  &trans  &trans  &trans    &trans    &kp LEFT_SHIFT  &trans     &trans          &trans        &trans
             >;
 
             sensor-bindings =
@@ -68,6 +68,16 @@
 &kp     &kp LESS_THAN  &kp LEFT_BRACE  &kp LEFT_BRACKET  &kp LEFT_PARENTHESIS  &kp BACKSLASH              &kp SLASH  &kp RIGHT_PARENTHESIS  &kp RIGHT_BRACKET  &kp RIGHT_BRACE  &kp GREATER_THAN  &kp
 &kp     &kp            &kp             &kp               &kp                   &kp PIPE       &kp    &kp  &kp        &kp                    &kp                &kp              &kp               &kp
                        &kp             &kp               &kp                   &kp            &kp    &kp  &kp        &kp                    &kp                &kp
+            >;
+        };
+
+        layer_3 {
+            bindings = <
+&trans  &trans  &trans  &trans  &trans  &trans                    &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans                    &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans                    &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans  &trans  &trans  &trans
+                &trans  &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans  &trans
             >;
         };
     };
