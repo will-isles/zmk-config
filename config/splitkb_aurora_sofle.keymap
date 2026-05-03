@@ -56,7 +56,7 @@
 
             sensor-bindings =
                 <&inc_dec_kp C_VOL_UP C_VOL_DN>,
-                <&inc_dec_kp LS(TAB) LS(LC(TAB))>;
+                <&inc_dec_kp LA(TAB) LS(LA(TAB))>;
         };
 
         layer_2 {
