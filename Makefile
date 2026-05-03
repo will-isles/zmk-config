@@ -3,7 +3,7 @@
 
 .PHONY: build help init
 
-# dongle | left | right | reset-xiao | reset-nano | all
+# dongle | left | right | reset-xiao | reset-nano | sofle-left | sofle-right | corne-all | sofle-all | all
 TARGET ?= all
 
 # Set INIT=1 (or true/yes) to pass --init (west update after west.yml / module changes)
@@ -15,8 +15,10 @@ init:
 
 help:
 	@echo "ZMK local build (same image/flow as GitHub build-user-config):"
-	@echo "  make build                  # all matrix targets (default)"
-	@echo "  make build TARGET=left      # one target: dongle|left|right|reset-xiao|reset-nano|all"
-	@echo "  make build INIT=1           # west refresh, then all targets"
+	@echo "  make build                    # TARGET=all (default): corne-all + sofle-all"
+	@echo "  make build TARGET=corne-all   # Corne dongle, halves, XIAO reset, nano reset (once)"
+	@echo "  make build TARGET=sofle-all   # Sofle left + right only"
+	@echo "  make build TARGET=left        # single Corne / Sofle / reset: see scripts/build-local.sh --help"
+	@echo "  make build INIT=1             # west refresh, then chosen TARGET"
 	@echo "  make init                     # same as: make build INIT=1"
-	@echo "  make init TARGET=right       # west refresh, then right half only"
+	@echo "  make init TARGET=sofle-right"

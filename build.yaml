@@ -34,6 +34,17 @@ include:
     cmake-args: -DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n
     artifact-name: corne_right
 
+  - board: nice_nano//zmk
+    shield: splitkb_aurora_sofle_left
+    # Left must be BLE central (host + split link); do not copy Corne halves' CENTRAL=n (dongle is central there).
+    cmake-args: -DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=y
+    artifact-name: sofle_left
+
+  - board: nice_nano//zmk
+    shield: splitkb_aurora_sofle_right
+    cmake-args: -DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n
+    artifact-name: sofle_right
+
   - board: xiao_ble//zmk
     shield: settings_reset
     artifact-name: reset_xiao

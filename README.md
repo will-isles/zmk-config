@@ -1,10 +1,12 @@
-# ZMK Configuration for SplitKB Aurora Corne
+# ZMK Configuration for SplitKB Aurora keyboards
 
-This repository contains the ZMK firmware configuration for a SplitKB Aurora Corne split keyboard.
+This repository contains ZMK user configuration for **SplitKB Aurora Corne** (halves, dongle, Nice!View) and **SplitKB Aurora Sofle v2** (halves on Nice!Nano). Index and per-keyboard details: [`docs/keyboards/README.md`](docs/keyboards/README.md).
 
 ## Hardware
 
-Physical setup, MCUs, displays, BLE options, and **Corne-specific build notes** (shield merge order, Nice!View): **[`docs/keyboards/splitkb_aurora_corne.md`](docs/keyboards/splitkb_aurora_corne.md)** (slug = `splitkb_aurora_corne`). Index of keyboards: [`docs/keyboards/README.md`](docs/keyboards/README.md).
+**Aurora Corne** — MCUs, Nice!View, BLE, shield merge order: **[`docs/keyboards/splitkb_aurora_corne.md`](docs/keyboards/splitkb_aurora_corne.md)** (slug `splitkb_aurora_corne`).
+
+**Aurora Sofle v2** — upstream shields, optional OLED/RGB, shared `reset_nano` erase UF2: **[`docs/keyboards/splitkb_aurora_sofle.md`](docs/keyboards/splitkb_aurora_sofle.md)** (slug `splitkb_aurora_sofle`).
 
 This repo follows [ZMK’s documented layout](https://zmk.dev/docs/config/): root [`build.yaml`](build.yaml), [`config/`](config/) for user keymaps/Kconfig + [`config/west.yml`](config/west.yml), repo-root [`boards/shields/`](boards/shields/) for out-of-tree shields (not under `config/boards/shields/`). [`zephyr/module.yml`](zephyr/module.yml) sets `board_root: .` so CI and local Docker builds discover `boards/` via `ZMK_EXTRA_MODULES`.
 
@@ -20,7 +22,9 @@ This repo follows [ZMK’s documented layout](https://zmk.dev/docs/config/): roo
 ├── config/
 │   ├── west.yml
 │   ├── splitkb_aurora_corne_{left,right}.conf
-│   └── splitkb_aurora_corne.keymap
+│   ├── splitkb_aurora_corne.keymap
+│   ├── splitkb_aurora_sofle_{left,right}.conf
+│   └── splitkb_aurora_sofle.keymap
 ├── docs/
 │   └── keyboards/                    # Per-keyboard inventory (see README there)
 ├── zephyr/
@@ -108,16 +112,18 @@ docker pull zmkfirmware/zmk-build-arm:stable
 **Build from the repo root:**
 
 ```bash
-make build                            # all targets from build.yaml (same as script below)
-./scripts/build-local.sh              # all targets from build.yaml
-./scripts/build-local.sh left         # left half only
-make build TARGET=left                # equivalent to the line above
+make build                            # default TARGET=all: corne-all + sofle-all (see script --help)
+./scripts/build-local.sh              # same as make build
+./scripts/build-local.sh corne-all    # Corne dongle, halves, both resets (reset_nano once)
+./scripts/build-local.sh sofle-all    # Sofle left + right only
+./scripts/build-local.sh left         # Corne left half only
+make build TARGET=sofle-left          # Sofle left half only
 ./scripts/build-local.sh dongle       # central dongle only
 ./scripts/build-local.sh --init all   # re-sync west modules, then build all
 make build INIT=1                     # equivalent: west refresh, then all targets
 ```
 
-UF2s are written to `firmware/` (gitignored) using stable names from [`build.yaml`](build.yaml) (`corne_dongle.uf2`, `corne_left.uf2`, `corne_right.uf2`, `reset_xiao.uf2`, `reset_nano.uf2`). The west workspace is cached in the Docker volume `zmk-aurora-corne-west` (override with `ZMK_WEST_VOLUME`).
+UF2s are written to `firmware/` (gitignored) using stable names from [`build.yaml`](build.yaml) (Corne: `corne_dongle.uf2`, `corne_left.uf2`, `corne_right.uf2`, `reset_xiao.uf2`, `reset_nano.uf2`; Sofle: `sofle_left.uf2`, `sofle_right.uf2`). The west workspace is cached in the Docker volume `zmk-aurora-corne-west` (override with `ZMK_WEST_VOLUME`).
 
 After changing the ZMK revision in [`config/west.yml`](config/west.yml), run with **`--init`** so `west update` runs again. For a clean Zephyr tree after a major bump, remove the volume once: `docker volume rm zmk-aurora-corne-west`, then `./scripts/build-local.sh --init all`.
 
@@ -126,10 +132,8 @@ After changing the ZMK revision in [`config/west.yml`](config/west.yml), run wit
 ### Automated Builds
 
 This repository is configured for automated builds via GitHub Actions. The `build.yaml` file defines the build matrix for:
-- Left half (Nice!Nano v2)
-- Right half (Nice!Nano v2)
-- Central dongle (Seeed XIAO BLE)
-- Settings reset firmware for both board types
+- Aurora Corne: Nice!Nano halves, XIAO dongle, settings reset for XIAO and Nice!Nano
+- Aurora Sofle v2: Nice!Nano halves (`sofle_left`, `sofle_right`; Nice!Nano erase uses the shared `reset_nano` artifact)
 
 Build artifacts are available in the GitHub Actions workflow runs.
 

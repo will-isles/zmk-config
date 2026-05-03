@@ -10,9 +10,9 @@ description: >-
 
 ## When to use
 
-- User or task names a **specific keyboard** (Corne, dongle, a future upstream board).
+- User or task names a **specific keyboard** (Corne, Sofle, dongle, a future upstream board).
 - You need **MCU list, shield names, BLE/display settings, or build ordering** (not only `build.yaml`).
-- Before editing [`build.yaml`](build.yaml), [`scripts/build-local.sh`](scripts/build-local.sh), or Corne helper shields under [`boards/shields/`](boards/shields/).
+- Before editing [`build.yaml`](build.yaml), [`scripts/build-local.sh`](scripts/build-local.sh), or Corne helper shields under [`boards/shields/`](boards/shields/) (Sofle is upstream-only — no Sofle tree under `boards/shields/`).
 
 ## Steps
 
@@ -26,6 +26,7 @@ description: >-
 | Keyboard | Slug | Inventory |
 | --- | --- | --- |
 | SplitKB Aurora Corne | `splitkb_aurora_corne` | [`docs/keyboards/splitkb_aurora_corne.md`](docs/keyboards/splitkb_aurora_corne.md) |
+| SplitKB Aurora Sofle (v2) | `splitkb_aurora_sofle` | [`docs/keyboards/splitkb_aurora_sofle.md`](docs/keyboards/splitkb_aurora_sofle.md) |
 
 Future upstream-only keyboards: use their primary shield prefix as slug and add a row to the index README.
 

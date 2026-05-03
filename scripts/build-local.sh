@@ -3,7 +3,10 @@
 # (zmkfirmware/zmk/.github/workflows/build-user-config.yml @ main).
 #
 # Usage:
-#   ./scripts/build-local.sh [--init] [dongle|left|right|reset-xiao|reset-nano|all]
+#   ./scripts/build-local.sh [--init] [TARGET]
+#
+# TARGET: dongle|left|right|reset-xiao|reset-nano|sofle-left|sofle-right|
+#         corne-all|sofle-all|all
 #
 # Requires: Docker (or Podman with docker CLI compatibility)
 set -euo pipefail
@@ -16,8 +19,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 usage() {
-  echo "Usage: $0 [--init] [dongle|left|right|reset-xiao|reset-nano|all]" >&2
+  echo "Usage: $0 [--init] [TARGET]" >&2
   echo "  --init  Run west update + west zephyr-export after syncing config (e.g. after west.yml revision change)" >&2
+  echo "  TARGET (Corne + shared reset):" >&2
+  echo "    dongle  left  right  reset-xiao  reset-nano  corne-all" >&2
+  echo "  TARGET (Sofle halves):" >&2
+  echo "    sofle-left  sofle-right  sofle-all" >&2
+  echo "  TARGET (combined):" >&2
+  echo "    all       corne-all + sofle-all (reset-nano built once inside corne-all)" >&2
   exit 1
 }
 
@@ -32,7 +41,7 @@ while [[ $# -gt 0 ]]; do
     -h|--help)
       usage
       ;;
-    dongle|left|right|reset-xiao|reset-nano|all)
+    dongle|left|right|reset-xiao|reset-nano|sofle-left|sofle-right|corne-all|sofle-all|all)
       TARGET="$1"
       shift
       ;;
@@ -76,6 +85,8 @@ run_in_work() {
 
 sync_config() {
   run_in_work "set -euo pipefail
+# Replace config dir entirely so removed host files (e.g. deleted overlays) do not linger in the volume.
+rm -rf /work/${CONFIG_PATH}
 mkdir -p /work/${CONFIG_PATH}
 cp -a /zmk-config/${CONFIG_PATH}/. /work/${CONFIG_PATH}/
 "
@@ -83,6 +94,7 @@ cp -a /zmk-config/${CONFIG_PATH}/. /work/${CONFIG_PATH}/
 
 west_init_update() {
   run_in_work "set -euo pipefail
+rm -rf /work/${CONFIG_PATH}
 mkdir -p /work/${CONFIG_PATH}
 cp -a /zmk-config/${CONFIG_PATH}/. /work/${CONFIG_PATH}/
 west init -l /work/${CONFIG_PATH}
@@ -93,6 +105,7 @@ west zephyr-export
 
 west_refresh() {
   run_in_work "set -euo pipefail
+rm -rf /work/${CONFIG_PATH}
 mkdir -p /work/${CONFIG_PATH}
 cp -a /zmk-config/${CONFIG_PATH}/. /work/${CONFIG_PATH}/
 west update --fetch-opt=--filter=tree:0
@@ -150,6 +163,7 @@ run_west_build() {
     "${DOCKER_IMAGE}" \
     bash -s <<'EOS'
 set -euo pipefail
+rm -rf "/work/${CONFIG_PATH}"
 mkdir -p "/work/${CONFIG_PATH}"
 cp -a "/zmk-config/${CONFIG_PATH}/." "/work/${CONFIG_PATH}/"
 # Each docker run has a fresh $HOME; re-register Zephyr from the persisted /work tree.
@@ -207,18 +221,43 @@ build_reset_nano() {
     run_west_build reset-nano "nice_nano//zmk" settings_reset
 }
 
+build_sofle_left() {
+  # Sofle left is BLE central (dongle-less); Corne halves use CENTRAL=n because the dongle is central.
+  ARTIFACT_NAME=sofle_left WEST_EXTRA_CMAKE="-DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=y" \
+    run_west_build sofle-left "nice_nano//zmk" splitkb_aurora_sofle_left
+}
+
+build_sofle_right() {
+  ARTIFACT_NAME=sofle_right WEST_EXTRA_CMAKE="-DCONFIG_ZMK_SPLIT=y -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n" \
+    run_west_build sofle-right "nice_nano//zmk" splitkb_aurora_sofle_right
+}
+
+build_corne_all() {
+  build_dongle
+  build_left
+  build_right
+  build_reset_xiao
+  build_reset_nano
+}
+
+build_sofle_all() {
+  build_sofle_left
+  build_sofle_right
+}
+
 case "${TARGET}" in
   dongle) build_dongle ;;
   left) build_left ;;
   right) build_right ;;
   reset-xiao) build_reset_xiao ;;
   reset-nano) build_reset_nano ;;
+  sofle-left) build_sofle_left ;;
+  sofle-right) build_sofle_right ;;
+  corne-all) build_corne_all ;;
+  sofle-all) build_sofle_all ;;
   all)
-    build_dongle
-    build_left
-    build_right
-    build_reset_xiao
-    build_reset_nano
+    build_corne_all
+    build_sofle_all
     ;;
   *)
     usage

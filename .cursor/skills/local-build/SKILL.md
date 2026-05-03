@@ -32,7 +32,7 @@ Outputs go to **`firmware/`** (gitignored). The west tree is cached in Docker vo
 ## What the script does (agent-relevant)
 
 - Binds this repo at **`/zmk-config`** and passes **`-DZMK_EXTRA_MODULES=/zmk-config`** when `zephyr/module.yml` exists (same idea as CI).
-- Syncs **`config/`** into the volume before init/builds.
+- Syncs **`config/`** into the volume before init/builds by **replacing** `/work/<CONFIG_PATH>` (`rm -rf` then `cp -a`) so files removed on the host are not left behind in the named volume.
 - **First run (empty volume):** `west init -l …/config`, `west update --fetch-opt=--filter=tree:0`, `west zephyr-export`.
 - **Each firmware build:** a **new** `docker run` with **`docker run -i`** so `bash -s` reads the heredoc from stdin. Without `-i`, the heredoc is empty, **`west build` never runs**, and the script can still exit 0 — always keep **`-i`** on that invocation.
 - Inside each build container, runs **`west zephyr-export`** before **`west build`** (fresh `$HOME`; Zephyr’s CMake package registry is not preserved across runs).

@@ -42,7 +42,7 @@ If display regressions appear, compare against upstream Nice!View + split behavi
 | `corne_left` | `nice_nano//zmk` | Left half firmware |
 | `corne_right` | `nice_nano//zmk` | Right half firmware |
 | `reset_xiao` | `xiao_ble//zmk` | `settings_reset` for XIAO |
-| `reset_nano` | `nice_nano//zmk` | `settings_reset` for Nice!Nano |
+| `reset_nano` | `nice_nano//zmk` | `settings_reset` for Nice!Nano (shared with [Aurora Sofle](splitkb_aurora_sofle.md) — one UF2, not duplicated in CI) |
 
 Full matrix: [`build.yaml`](../../build.yaml).
 
