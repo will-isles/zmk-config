@@ -2,14 +2,11 @@
 
 This repository contains the ZMK firmware configuration for a SplitKB Aurora Corne split keyboard.
 
-## Hardware Configuration
+## Hardware
 
-- **Keyboard**: SplitKB Aurora Corne (36-key split keyboard)
-- **Microcontrollers**: 
-  - Left/Right halves: Nice!Nano v2
-  - Dongle: Seeed XIAO BLE
-- **Displays**: Nice!View (128x64 OLED displays)
-- **Connectivity**: Bluetooth Low Energy (BLE) with central dongle support
+Physical setup, MCUs, displays, BLE options, and **Corne-specific build notes** (shield merge order, Nice!View): **[`docs/keyboards/splitkb_aurora_corne.md`](docs/keyboards/splitkb_aurora_corne.md)** (slug = `splitkb_aurora_corne`). Index of keyboards: [`docs/keyboards/README.md`](docs/keyboards/README.md).
+
+This repo follows [ZMK’s documented layout](https://zmk.dev/docs/config/): root [`build.yaml`](build.yaml), [`config/`](config/) for user keymaps/Kconfig + [`config/west.yml`](config/west.yml), repo-root [`boards/shields/`](boards/shields/) for out-of-tree shields (not under `config/boards/shields/`). [`zephyr/module.yml`](zephyr/module.yml) sets `board_root: .` so CI and local Docker builds discover `boards/` via `ZMK_EXTRA_MODULES`.
 
 ## Repository Structure
 
@@ -17,16 +14,22 @@ This repository contains the ZMK firmware configuration for a SplitKB Aurora Cor
 .
 ├── boards/
 │   └── shields/
-│       └── splitkb_aurora_corne/    # Shield definitions
+│       ├── splitkb_aurora_corne/       # Aurora Corne shield (dongle overlay, Kconfig)
+│       ├── splitkb_nice_view_spi/      # Helper: nice_view_spi for halves matrix
+│       └── splitkb_aurora_i2c_off/     # Helper: I2C off (must be last in shield list)
 ├── config/
-│   ├── splitkb_aurora_corne_{left,right}.conf  # Half-specific Kconfig
-│   └── splitkb_aurora_corne.keymap             # Keymap definition
+│   ├── west.yml
+│   ├── splitkb_aurora_corne_{left,right}.conf
+│   └── splitkb_aurora_corne.keymap
+├── docs/
+│   └── keyboards/                    # Per-keyboard inventory (see README there)
 ├── zephyr/
-│   └── module.yml                   # Zephyr module (board_root; ZMK_EXTRA_MODULES)
-├── build.yaml                       # GitHub Actions build matrix
+│   └── module.yml                  # board_root: . ; ZMK_EXTRA_MODULES in CI/local
+├── Makefile
+├── build.yaml
 ├── scripts/
-│   └── build-local.sh               # Docker-based local build (CI parity)
-└── README.md                        # This file
+│   └── build-local.sh
+└── README.md
 ```
 
 ## Keymap Layers
@@ -105,10 +108,13 @@ docker pull zmkfirmware/zmk-build-arm:stable
 **Build from the repo root:**
 
 ```bash
+make build                            # all targets from build.yaml (same as script below)
 ./scripts/build-local.sh              # all targets from build.yaml
 ./scripts/build-local.sh left         # left half only
+make build TARGET=left                # equivalent to the line above
 ./scripts/build-local.sh dongle       # central dongle only
 ./scripts/build-local.sh --init all   # re-sync west modules, then build all
+make build INIT=1                     # equivalent: west refresh, then all targets
 ```
 
 UF2s are written to `firmware/` (gitignored) using stable names from [`build.yaml`](build.yaml) (`corne_dongle.uf2`, `corne_left.uf2`, `corne_right.uf2`, `reset_xiao.uf2`, `reset_nano.uf2`). The west workspace is cached in the Docker volume `zmk-aurora-corne-west` (override with `ZMK_WEST_VOLUME`).
@@ -127,18 +133,9 @@ This repository is configured for automated builds via GitHub Actions. The `buil
 
 Build artifacts are available in the GitHub Actions workflow runs.
 
-## Bluetooth Configuration
+## Bluetooth (halves)
 
-### Power Settings
-- **Transmit Power**: +8dBm (`CONFIG_BT_CTLR_TX_PWR_PLUS_8=y`)
-  - Increased power for better range and connection stability, especially important for split keyboards
-- **2M PHY**: Disabled (`CONFIG_BT_CTLR_PHY_2M=n`)
-  - Disabled for better compatibility with older Bluetooth devices
-
-### Pairing and Device Selection
-- Use the Raise layer to access Bluetooth controls
-- `BT_SEL 0-4`: Switch between up to 5 paired devices
-- `BT_CLR`: Clear all Bluetooth pairing information
+Power, PHY, and pairing behavior are documented in **[`docs/keyboards/splitkb_aurora_corne.md`](docs/keyboards/splitkb_aurora_corne.md)**. In the keymap, use the **Raise** layer for `BT_SEL 0-4` and `BT_CLR`.
 
 ## ZMK Studio
 
@@ -148,14 +145,9 @@ This configuration includes support for ZMK Studio, a web-based keymap editor an
 - **Usage**: The `studio_unlock` behavior in the Raise layer unlocks the keyboard for ZMK Studio configuration
 - **Documentation**: See [ZMK Studio documentation](https://zmk.dev/docs/features/studio) for more information
 
-## Display Configuration
+## Display (halves)
 
-Nice!View displays are configured for both keyboard halves. The display shows:
-- Current layer information
-- Battery status
-- Connection status
-
-Configuration is handled via the `nice_view_adapter` and `nice_view_custom` shields in the build configuration.
+Nice!View on each half — widgets, built-in vs custom status screen, and build matrix fragments: **[`docs/keyboards/splitkb_aurora_corne.md`](docs/keyboards/splitkb_aurora_corne.md)**.
 
 ## Troubleshooting
 

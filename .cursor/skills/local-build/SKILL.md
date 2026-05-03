@@ -11,6 +11,7 @@ description: >-
 
 ## When to use
 
+- For **keyboard-specific** shield lists, merge order, or hardware (MCU, displays, BLE): use the **`keyboards`** skill ([`../keyboards/SKILL.md`](../keyboards/SKILL.md)) or read `docs/keyboards/<slug>.md` first (`slug` = shield prefix, e.g. `splitkb_aurora_corne`).
 - Before pushing: confirm every row in [`build.yaml`](build.yaml) compiles.
 - After CI failures: same image (`zmkfirmware/zmk-build-arm:stable`), `west init` / `west update --fetch-opt=--filter=tree:0`, and `west build` flags as CI ([`.github/workflows/build.yml`](.github/workflows/build.yml) → `build-user-config.yml` @ `main`).
 - When the user wants UF2s without opening GitHub Actions.
@@ -47,12 +48,7 @@ Outputs go to **`firmware/`** (gitignored). The west tree is cached in Docker vo
 | `left`/`right` | `nice_nano//zmk` | Nice!Nano v2 default variant; not `nice_nano_v2`. |
 | `reset-*`    | `xiao_ble//zmk` / `nice_nano//zmk` | `settings_reset` shield. |
 
-Left/right shield strings include repo-local helpers under **`boards/shields/`**:
-
-- **`splitkb_nice_view_spi`** — defines **`nice_view_spi`** before `nice_view.overlay` (module `nice_nano` path does not pick up ZMK’s `nice_view_adapter/boards/…` fragment).
-- **`splitkb_aurora_i2c_off`** — merged **last**; disables **`&i2c0` / `&pro_micro_i2c`** so **`splitkb_aurora_corne.dtsi`** does not leave TWI0 enabled alongside SPIM0 (nRF52840 instance conflict).
-
-Halves use **`config/splitkb_aurora_corne_{left,right}.conf`**: **`CONFIG_ZMK_DISPLAY_STATUS_SCREEN_BUILT_IN=y`** and **`CONFIG_ZMK_DISPLAY_STATUS_SCREEN_CUSTOM=n`** so the nice!view custom path does not link **`peripheral_status.c`** on split peripheral with current ZMK. If display regressions appear, compare against upstream nice!view + split behavior before re-enabling custom status.
+Corne-specific shield strings, display Kconfig, and troubleshooting (**`nice_view_spi`**, **`splitkb_aurora_i2c_off`**, **`peripheral_status`**) live in [`docs/keyboards/splitkb_aurora_corne.md`](docs/keyboards/splitkb_aurora_corne.md).
 
 ## Success criteria
 
@@ -72,14 +68,11 @@ Halves use **`config/splitkb_aurora_corne_{left,right}.conf`**: **`CONFIG_ZMK_DI
 
 - **`docker: command not found`** — install Docker or Podman docker shim; do not assume a host `west` toolchain.
 - **First run / `--init` is slow** — `west update` fills the named volume; later incremental builds are faster.
-- **`nice_view_spi` undefined** — ensure left/right matrix still includes **`splitkb_nice_view_spi`** (and ordering) in `build.yaml` and [`scripts/build-local.sh`](scripts/build-local.sh).
-- **SPI0 / TWI0 static assert** — ensure **`splitkb_aurora_i2c_off`** remains **last** in the shield list for halves.
-- **Linker errors from `peripheral_status.c`** on halves — halves conf uses built-in display status screen; re-enabling custom status may require upstream ZMK / extra Kconfig (entropy, battery reporting) to match.
 - **Stale ZMK / Zephyr after `west.yml` change** — **`./scripts/build-local.sh --init all`**; for a major bump, **`docker volume rm zmk-aurora-corne-west`** then **`--init all`**.
 
 ## Canonical references
 
 - Matrix: [`build.yaml`](build.yaml)
+- Corne inventory (shields, merge order, display/BLE): [`docs/keyboards/splitkb_aurora_corne.md`](docs/keyboards/splitkb_aurora_corne.md)
 - Human steps: [`README.md`](README.md) (*Local container build*)
 - Script: [`scripts/build-local.sh`](scripts/build-local.sh)
-- Helper shields: [`boards/shields/splitkb_nice_view_spi/`](boards/shields/splitkb_nice_view_spi/), [`boards/shields/splitkb_aurora_i2c_off/`](boards/shields/splitkb_aurora_i2c_off/)
