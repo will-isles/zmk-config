@@ -33,7 +33,7 @@
                         &none   &none   &kp LGUI  &mo 1   &kp LSHIFT    &kp SPACE  &mo 2   &kp RIGHT_ALT  &none      &none
             >;
 
-            sensor-bindings = <&inc_dec_kp K_VOL_UP K_VOL_DN>;
+            sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP>;
         };
 
         lower_layer {
