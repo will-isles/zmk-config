@@ -49,11 +49,11 @@
             //               |  —  |  —   |  —   |  —   | LSHFT |   —   |  |   —   |  —   |  —    |  —   |
 
             bindings = <
-&kp GRAVE  &trans  &kp TAB          &kp KP_SLASH     &kp KP_ASTERISK  &kp KP_EQUAL                            &trans     &trans          &trans        &trans           &trans   &trans
-&kp TAB    &trans  &kp KP_NUMBER_7  &kp KP_NUMBER_8  &kp KP_NUMBER_9  &kp KP_MINUS                            &trans     &trans          &trans        &trans           &trans   &trans
-&trans     &trans  &kp KP_NUMBER_4  &kp KP_NUMBER_5  &kp KP_NUMBER_6  &kp KP_PLUS                             &kp PG_UP  &kp HOME        &kp UP_ARROW  &kp END          &kp INS  &kp DEL
-&trans     &trans  &kp KP_NUMBER_1  &kp KP_NUMBER_2  &kp KP_NUMBER_3  &kp KP_ENTER  &trans    &trans          &kp PG_DN  &kp LEFT_ARROW  &kp DOWN      &kp RIGHT_ARROW  &trans   &trans
-                   &trans           &trans           &trans           &trans        &trans    &kp LEFT_SHIFT  &trans     &trans          &trans        &trans
+&kp GRAVE  &trans     &kp TAB          &kp KP_SLASH     &kp KP_ASTERISK  &kp KP_EQUAL                            &trans     &trans          &trans        &trans           &trans   &trans
+&kp TAB    &trans     &kp KP_NUMBER_7  &kp KP_NUMBER_8  &kp KP_NUMBER_9  &kp KP_MINUS                            &trans     &trans          &trans        &trans           &trans   &trans
+&trans     &trans     &kp KP_NUMBER_4  &kp KP_NUMBER_5  &kp KP_NUMBER_6  &kp KP_PLUS                             &kp PG_UP  &kp HOME        &kp UP_ARROW  &kp END          &kp INS  &kp DEL
+&trans     &kp KP_N0  &kp KP_NUMBER_1  &kp KP_NUMBER_2  &kp KP_NUMBER_3  &kp KP_ENTER  &trans    &trans          &kp PG_DN  &kp LEFT_ARROW  &kp DOWN      &kp RIGHT_ARROW  &trans   &trans
+                      &trans           &trans           &trans           &trans        &trans    &kp LEFT_SHIFT  &trans     &trans          &trans        &trans
             >;
 
             sensor-bindings =
