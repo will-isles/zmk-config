@@ -33,10 +33,10 @@
 
         Lower {
             bindings = <
-&kp GRAVE  &trans           &kp N7        &kp N8        &kp N9        &kp MINUS    &trans          &trans    &trans        &trans     &trans      &trans
-&trans     &trans           &kp NUMBER_4  &kp N5        &kp NUMBER_6  &kp EQUAL    &kp PG_UP       &kp HOME  &kp UP_ARROW  &kp END    &kp INSERT  &kp DELETE
-&trans     &kp KP_NUMBER_0  &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans       &kp PAGE_DOWN   &kp LEFT  &kp DOWN      &kp RIGHT  &trans      &trans
-                                          &trans        &trans        &trans       &kp LEFT_SHIFT  &trans    &trans
+&kp GRAVE  &trans  &kp N7        &kp N8        &kp N9        &kp MINUS    &trans          &trans    &trans        &trans     &trans      &trans
+&trans     &trans  &kp NUMBER_4  &kp N5        &kp NUMBER_6  &kp EQUAL    &kp PG_UP       &kp HOME  &kp UP_ARROW  &kp END    &kp INSERT  &kp DELETE
+&trans     &kp N0  &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans       &kp PAGE_DOWN   &kp LEFT  &kp DOWN      &kp RIGHT  &trans      &trans
+                                 &trans        &trans        &trans       &kp LEFT_SHIFT  &trans    &trans
             >;
         };
 
