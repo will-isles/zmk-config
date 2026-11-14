@@ -33,7 +33,7 @@ There is no repo-local unit test script; firmware validation is build/CI and har
 
 ## Workflow expectations
 
-- Prefer small, reviewable changes; match existing style in neighboring `*.keymap`, `*.conf`, and shield files.
+- Follow agent-home's coding standards, `~/.claude/docs/coding-standards.md`. The neighbouring style to match is in the nearby `*.keymap`, `*.conf` and shield files.
 - After substantive config or shield edits, run the **narrowest** `west build` that covers your change, or rely on CI if no local workspace.
 
 ## Agent affordances
